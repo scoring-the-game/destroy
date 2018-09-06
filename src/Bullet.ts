@@ -18,7 +18,7 @@ export default class Bullet implements IGameItem {
     const { x: dx, y: dy } = rotatePoint(
       { x: 0, y: -20 },
       { x: 0, y: 0 },
-      rotation * Math.PI / 180
+      (rotation * Math.PI) / 180
     );
     this.position = { x: position.x + dx, y: position.y + dy };
     this.velocity = { dx: dx / 2, dy: dy / 2 };
@@ -54,7 +54,7 @@ export default class Bullet implements IGameItem {
     const { x, y } = this.position;
     ctx.save();
     ctx.translate(x, y);
-    ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.fillStyle = '#fff';
     (ctx.lineWidth = 0), 5;
     ctx.beginPath();

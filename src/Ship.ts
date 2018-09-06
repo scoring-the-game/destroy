@@ -5,6 +5,7 @@ import {
   GameItemGroup,
   TGameItemRenderProps,
   TScreenInfo,
+  TKeyStatus,
 } from './typedefs';
 
 import Bullet from './Bullet';
@@ -55,7 +56,10 @@ export default class Ship implements IGameItem {
   }
 
   explode() {
-    const { radius, position: { x, y } } = this;
+    const {
+      radius,
+      position: { x, y },
+    } = this;
 
     // Explode
     for (let i = 0; i < 60; i++) {
@@ -85,15 +89,15 @@ export default class Ship implements IGameItem {
 
   accelerate(val) {
     let { dx, dy } = this.velocity;
-    dx -= Math.sin(-this.rotation * Math.PI / 180) * this.speed;
-    dy -= Math.cos(-this.rotation * Math.PI / 180) * this.speed;
+    dx -= Math.sin((-this.rotation * Math.PI) / 180) * this.speed;
+    dy -= Math.cos((-this.rotation * Math.PI) / 180) * this.speed;
     this.velocity = { dx, dy };
 
     // Thruster particles
     const { x: rx, y: ry } = rotatePoint(
       { x: 0, y: -10 },
       { x: 0, y: 0 },
-      (this.rotation - 180) * Math.PI / 180
+      ((this.rotation - 180) * Math.PI) / 180
     );
     const { x, y } = this.position;
     this.createParticle({
@@ -111,11 +115,11 @@ export default class Ship implements IGameItem {
     this.lastShot = Date.now();
   }
 
-  handleControls(keys) {
-    if (keys.up) this.accelerate(1);
-    if (keys.left) this.rotate(RotationDirection.left);
-    if (keys.right) this.rotate(RotationDirection.right);
-    if (keys.space && Date.now() - this.lastShot > 300) {
+  handleControls(keyStatus: TKeyStatus) {
+    if (keyStatus.up) this.accelerate(1);
+    if (keyStatus.left) this.rotate(RotationDirection.left);
+    if (keyStatus.right) this.rotate(RotationDirection.right);
+    if (keyStatus.space && Date.now() - this.lastShot > 300) {
       this.fireBullet();
     }
   }
@@ -157,7 +161,7 @@ export default class Ship implements IGameItem {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.strokeStyle = '#ffffff';
     ctx.fillStyle = '#000000';
     ctx.lineWidth = 2;
@@ -173,8 +177,8 @@ export default class Ship implements IGameItem {
     ctx.restore();
   }
 
-  render({ screenInfo, ctx, keys }: TGameItemRenderProps) {
-    this.handleControls(keys);
+  render({ screenInfo, ctx, keyStatus }: TGameItemRenderProps) {
+    this.handleControls(keyStatus);
     this.update(screenInfo);
     this.draw(ctx);
   }

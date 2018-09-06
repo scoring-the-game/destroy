@@ -13,12 +13,12 @@ export function asteroidVertices(count: number, radius: number): TPosition[] {
   for (let i = 0; i < count; i++) {
     p[i] = {
       x:
-        (-Math.sin(360 / count * i * Math.PI / 180) +
-          Math.round(Math.random() * 2 - 1) * Math.random() / 3) *
+        (-Math.sin(((360 / count) * i * Math.PI) / 180) +
+          (Math.round(Math.random() * 2 - 1) * Math.random()) / 3) *
         radius,
       y:
-        (-Math.cos(360 / count * i * Math.PI / 180) +
-          Math.round(Math.random() * 2 - 1) * Math.random() / 3) *
+        (-Math.cos(((360 / count) * i * Math.PI) / 180) +
+          (Math.round(Math.random() * 2 - 1) * Math.random()) / 3) *
         radius,
     };
   }

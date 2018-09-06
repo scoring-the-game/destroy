@@ -14,7 +14,7 @@ export type TAsteroidProps = {
   readonly position: TPosition;
   readonly size: number;
   readonly create: (item: IGameItem, group: GameItemGroup) => void;
-  readonly addScore: (score: number) => void;
+  readonly incrementScore: (score: number) => void;
 };
 
 export default class Asteroid implements IGameItem {
@@ -27,7 +27,7 @@ export default class Asteroid implements IGameItem {
   vertices: TPosition[];
   isDeleted: boolean;
 
-  addScore: (score: number) => void;
+  incrementScore: (score: number) => void;
   create: (item: IGameItem, group: GameItemGroup) => void;
 
   constructor(props: TAsteroidProps) {
@@ -36,10 +36,10 @@ export default class Asteroid implements IGameItem {
     this.rotation = 0;
     this.rotationSpeed = randomNumBetween(-1, 1);
     this.radius = props.size;
-    this.score = 80 / this.radius * 5;
+    this.score = (80 / this.radius) * 5;
     this.vertices = asteroidVertices(8, props.size);
 
-    this.addScore = props.addScore;
+    this.incrementScore = props.incrementScore;
     this.create = props.create;
   }
 
@@ -77,14 +77,14 @@ export default class Asteroid implements IGameItem {
       position: this.calcInitialAsteroidPosition(),
       size: this.radius / 2,
       create: this.create,
-      addScore: this.addScore,
+      incrementScore: this.incrementScore,
     });
     this.create(asteroid, GameItemGroup.asteroids);
   }
 
   destroy() {
     this.isDeleted = true;
-    this.addScore(this.score);
+    this.incrementScore(this.score);
 
     // Explode
     for (let i = 0; i < this.radius; i++) {
@@ -140,7 +140,7 @@ export default class Asteroid implements IGameItem {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.rotate((this.rotation * Math.PI) / 180);
     ctx.strokeStyle = '#FFF';
     ctx.lineWidth = 2;
     ctx.beginPath();
