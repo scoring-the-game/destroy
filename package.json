@@ -9,6 +9,7 @@
     "prettier": "yarn prettier-check --write"
   },
   "dependencies": {
+    "@types/react": "^16.4.13",
     "preact": "^8.3.1",
     "react": "^16.4.2",
     "react-dom": "^16.4.2"
