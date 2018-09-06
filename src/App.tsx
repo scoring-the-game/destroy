@@ -53,7 +53,7 @@ const defaultScreenInfo: TScreenInfo = {
 
 type TGameItemsMap = { [key in GameItemGroup]: IGameItem[] };
 
-export class Game extends React.Component<{}, TGameState> {
+export class App extends React.Component<{}, TGameState> {
   state: TGameState = {
     screenInfo: defaultScreenInfo,
     ctx: null,
@@ -72,11 +72,11 @@ export class Game extends React.Component<{}, TGameState> {
   };
 
   componentDidMount() {
-    console.log('Game#componentDidMount');
+    console.log('App#componentDidMount');
     this.addListeners();
 
     const ctx = this.refCanvas.getContext('2d');
-    console.log('Game#componentDidMount =>', { ctx });
+    console.log('App#componentDidMount =>', { ctx });
     this.setState({ ctx });
     this.startGame();
     requestAnimationFrame(this.update);
@@ -92,21 +92,21 @@ export class Game extends React.Component<{}, TGameState> {
   };
 
   addListeners() {
-    console.log('Game#addListeners');
+    console.log('App#addListeners');
     window.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('resize', this.handleResize);
   }
 
   removeListeners() {
-    console.log('Game#removeListeners');
+    console.log('App#removeListeners');
     window.removeEventListener('keyup', this.handleKeyUp);
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('resize', this.handleResize);
   }
 
   handleResize = e => {
-    console.log('Game#handleResize');
+    console.log('App#handleResize');
     const screenInfo = {
       width: window.innerWidth,
       height: window.innerHeight,
@@ -116,7 +116,7 @@ export class Game extends React.Component<{}, TGameState> {
   };
 
   handleKeys(e, value: boolean) {
-    console.log('Game#handleKeys');
+    console.log('App#handleKeys');
     const { keyCode } = e;
     let { keys } = this.state;
     if (keyCode === KEY.LEFT || keyCode === KEY.A) keys = { ...keys, left: value };
@@ -132,7 +132,7 @@ export class Game extends React.Component<{}, TGameState> {
   handleClickTryAgain = () => this.startGame();
 
   update = () => {
-    // console.log('Game#update');
+    // console.log('App#update');
     const { ctx, screenInfo, keys } = this.state;
     const ship = this.itemsMap[GameItemGroup.ships][0];
 
@@ -175,18 +175,18 @@ export class Game extends React.Component<{}, TGameState> {
   };
 
   addScore = (points: number) => {
-    console.log('Game#addScore =>', { points });
+    console.log('App#addScore =>', { points });
     if (!this.state.inGame) return;
     this.setState(state => ({ currentScore: state.currentScore + points }));
   };
 
   startGame() {
-    console.log('Game#startGame');
+    console.log('App#startGame');
     this.setState({ inGame: true, currentScore: 0 });
-    console.log('Game#startGame/1');
+    console.log('App#startGame/1');
 
     const { screenInfo } = this.state;
-    console.log('Game#startGame/2', { screenInfo });
+    console.log('App#startGame/2', { screenInfo });
 
     // Make ship
     const ship = new Ship({
@@ -194,15 +194,15 @@ export class Game extends React.Component<{}, TGameState> {
       create: this.createObject.bind(this),
       onDie: this.gameOver,
     });
-    console.log('Game#startGame/3', { ship });
+    console.log('App#startGame/3', { ship });
     this.createObject(ship, GameItemGroup.ships);
-    console.log('Game#startGame/4');
+    console.log('App#startGame/4');
 
     // Make asteroids
     this.itemsMap[GameItemGroup.asteroids] = [];
-    console.log('Game#startGame/5');
+    console.log('App#startGame/5');
     this.generateAsteroids(this.state.asteroidCount);
-    console.log('Game#startGame/6');
+    console.log('App#startGame/6');
   }
 
   gameOver = () => {
@@ -240,16 +240,16 @@ export class Game extends React.Component<{}, TGameState> {
   }
 
   createObject = (item: IGameItem, group: GameItemGroup) => {
-    console.log('Game#createObject', { item, group });
+    console.log('App#createObject', { item, group });
     let { itemsMap } = this;
     let items = itemsMap[group];
-    console.log('Game#createObject/1: items =>', items);
+    console.log('App#createObject/1: items =>', items);
     items = [...items, item];
-    console.log('Game#createObject/2: items =>', items);
+    console.log('App#createObject/2: items =>', items);
     itemsMap = { ...itemsMap, [group]: items };
-    console.log('Game#createObject/3 =>', itemsMap);
+    console.log('App#createObject/3 =>', itemsMap);
     this.itemsMap = itemsMap;
-    console.log('Game#createObject/4');
+    console.log('App#createObject/4');
   };
 
   updateObjects(items: IGameItem[], group: GameItemGroup) {
@@ -325,7 +325,7 @@ export class Game extends React.Component<{}, TGameState> {
   }
 
   render() {
-    console.log('Game#render');
+    console.log('App#render');
     return (
       <div>
         {this.state.inGame ? null : this.renderGameOverMessage()}
