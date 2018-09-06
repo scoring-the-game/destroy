@@ -1,0 +1,21 @@
+{
+  "name": "scoring-the-game--destroy",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "serve": "parcel -p 4321 index.html",
+    "prettier-check": "prettier --single-quote --trailing-comma es5 --print-width 100 --list-different **/src/**/*.ts",
+    "prettier": "yarn prettier-check --write"
+  },
+  "dependencies": {
+    "preact": "^8.3.1",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.9.5",
+    "prettier": "^1.14.2",
+    "typescript": "^3.0.3"
+  }
+}
