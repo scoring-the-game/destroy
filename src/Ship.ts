@@ -47,11 +47,8 @@ export default class Ship implements IGameItem {
     this.create(particle, GameItemGroup.particles);
   }
 
-  destroy() {
-    this.isDeleted = true;
-    this.onDie();
-
-    const { x, y } = this.position;
+  explode() {
+    const { radius, position: { x, y } } = this;
 
     // Explode
     for (let i = 0; i < 60; i++) {
@@ -59,22 +56,24 @@ export default class Ship implements IGameItem {
         lifeSpan: randomNumBetween(60, 100),
         size: randomNumBetween(1, 4),
         position: {
-          x: x + randomNumBetween(-this.radius / 4, this.radius / 4),
-          y: y + randomNumBetween(-this.radius / 4, this.radius / 4),
+          x: x + randomNumBetween(-radius / 4, radius / 4),
+          y: y + randomNumBetween(-radius / 4, radius / 4),
         },
         velocity: { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) },
-        Z,
       });
     }
   }
 
+  destroy() {
+    this.isDeleted = true;
+    this.onDie();
+    this.explode();
+  }
+
   rotate(direction: RotationDirection) {
-    if (direction === RotationDirection.left) {
-      this.rotation -= this.rotationSpeed;
-    }
-    if (direction === RotationDirection.right) {
-      this.rotation += this.rotationSpeed;
-    }
+    const { rotationSpeed } = this;
+    if (direction === RotationDirection.left) this.rotation -= rotationSpeed;
+    if (direction === RotationDirection.right) this.rotation += rotationSpeed;
   }
 
   accelerate(val) {

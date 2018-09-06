@@ -1,4 +1,4 @@
-import { IGameItem, GameItemGroup, TGameItemRenderProps, TPosition, TVelocity } from './typedefs';
+import { IGameItem, GameItemGroup, TGameItemRenderProps, TPosition, TVelocity, TScreenInfo } from './typedefs';
 
 import Particle from './Particle';
 import { asteroidVertices, randomNumBetween } from './helpers';
@@ -36,14 +36,23 @@ export default class Asteroid implements IGameItem {
     this.create = props.create;
   }
 
+  calcParticlePosition(): TPosition {
+    const { radius } = this;
+    let { x, y } = this.position;
+    x += randomNumBetween(-radius / 4, radius / 4);
+    y += randomNumBetween(-radius / 4, radius / 4);
+    return { x, y };
+  }
+
+  calcParticleVelocity(): TVelocity {
+    return { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) };
+  }
+
   createParticle() {
     const particle = new Particle({
-      position: {
-        x: this.position.x + randomNumBetween(-this.radius / 4, this.radius / 4),
-        y: this.position.y + randomNumBetween(-this.radius / 4, this.radius / 4),
-      },
+      position: this.calcParticlePosition(),
       size: randomNumBetween(1, 3),
-      velocity: { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) },
+      velocity: this.calcParticleVelocity(),
       lifeSpan: randomNumBetween(60, 100),
     });
     this.create(particle, GameItemGroup.particles);
@@ -79,11 +88,15 @@ export default class Asteroid implements IGameItem {
     }
   }
 
-  render({ screenInfo, ctx }: TGameItemRenderProps) {
-    // Move
-    this.position.x += this.velocity.dx;
-    this.position.y += this.velocity.dy;
+  move() {
+    let { x, y } = this.position;
+    const { dx, dy } = this.velocity;
+    x += dx;
+    y += dy;
+    this.position = { x, y };
+  }
 
+  rotate() {
     // Rotation
     this.rotation += this.rotationSpeed;
     if (this.rotation >= 360) {
@@ -92,14 +105,22 @@ export default class Asteroid implements IGameItem {
     if (this.rotation < 0) {
       this.rotation += 360;
     }
+  }
 
-    // Screen edges
-    if (this.position.x > screenInfo.width + this.radius) this.position.x = -this.radius;
-    else if (this.position.x < -this.radius) this.position.x = screenInfo.width + this.radius;
-    if (this.position.y > screenInfo.height + this.radius) this.position.y = -this.radius;
-    else if (this.position.y < -this.radius) this.position.y = screenInfo.height + this.radius;
+  adjustBounds({ width, height }: TScreenInfo) {
+    const { radius } = this;
+    let { x, y } = this.position;
 
-    // Draw
+    if (x > width + radius) x = -radius;
+    else if (x < -radius) x = width + radius;
+
+    if (y > height + radius) y = -radius;
+    else if (y < -radius) y = height + radius;
+
+    this.position = { x, y };
+  }
+
+  draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate(this.rotation * Math.PI / 180);
@@ -113,5 +134,12 @@ export default class Asteroid implements IGameItem {
     ctx.closePath();
     ctx.stroke();
     ctx.restore();
+  }
+
+  render({ screenInfo, ctx }: TGameItemRenderProps) {
+    this.move();
+    this.rotate();
+    this.adjustBounds(screenInfo);
+    this.draw(ctx);
   }
 }

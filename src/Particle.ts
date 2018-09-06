@@ -28,14 +28,21 @@ export default class Particle implements IGameItem {
     this.isDeleted = true;
   }
 
-  render({ ctx }: TGameItemRenderProps) {
-    // Move
-    this.position.x += this.velocity.dx;
-    this.position.y += this.velocity.dy;
-    this.velocity.x *= this.inertia;
-    this.velocity.y *= this.inertia;
+  move() {
+    const { position, velocity, inertia } = this;
+    let { x, y } = position;
+    let { dx, dy } = velocity;
 
-    // Shrink
+    x += dx;
+    y += dy;
+    this.position = { x, y };
+
+    dx *= inertia;
+    dy *= inertia;
+    this.velocity = { dx, dy };
+  }
+
+  shrink() {
     this.radius -= 0.1;
     if (this.radius < 0.1) {
       this.radius = 0.1;
@@ -43,8 +50,9 @@ export default class Particle implements IGameItem {
     if (this.lifeSpan-- < 0) {
       this.destroy();
     }
+  }
 
-    // Draw
+  draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
     ctx.fillStyle = '#ffffff';
@@ -55,5 +63,11 @@ export default class Particle implements IGameItem {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
+  }
+
+  render({ ctx }: TGameItemRenderProps) {
+    this.move();
+    this.shrink();
+    this.draw(ctx);
   }
 }
