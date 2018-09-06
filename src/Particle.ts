@@ -1,11 +1,11 @@
-import { IGameItem, TPosition, TVelocity, TGameItemRenderProps } from './typedefs';
+import { IGameItem, TPosition, TVelocity, TGameItemRenderProps, TScreenInfo } from './typedefs';
 
 export type TParticleProps = {
   readonly position: TPosition;
   readonly size: number;
   readonly velocity: TVelocity;
   readonly lifeSpan: number;
-}
+};
 
 export default class Particle implements IGameItem {
   position: TPosition;
@@ -52,6 +52,11 @@ export default class Particle implements IGameItem {
     }
   }
 
+  update(_screenInfo: TScreenInfo) {
+    this.move();
+    this.shrink();
+  }
+
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
@@ -65,9 +70,8 @@ export default class Particle implements IGameItem {
     ctx.restore();
   }
 
-  render({ ctx }: TGameItemRenderProps) {
-    this.move();
-    this.shrink();
+  render({ screenInfo, ctx }: TGameItemRenderProps) {
+    this.update(screenInfo);
     this.draw(ctx);
   }
 }

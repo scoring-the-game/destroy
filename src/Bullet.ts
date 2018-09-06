@@ -45,6 +45,11 @@ export default class Bullet implements IGameItem {
     }
   }
 
+  update(screenInfo: TScreenInfo) {
+    this.move();
+    this.checkBounds(screenInfo);
+  }
+
   draw(ctx) {
     const { x, y } = this.position;
     ctx.save();
@@ -60,8 +65,7 @@ export default class Bullet implements IGameItem {
   }
 
   render({ screenInfo, ctx }: TGameItemRenderProps) {
-    this.move();
-    this.checkBounds(screenInfo);
+    this.update(screenInfo);
     this.draw(ctx);
   }
 }

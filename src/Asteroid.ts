@@ -1,4 +1,11 @@
-import { IGameItem, GameItemGroup, TGameItemRenderProps, TPosition, TVelocity, TScreenInfo } from './typedefs';
+import {
+  IGameItem,
+  GameItemGroup,
+  TGameItemRenderProps,
+  TPosition,
+  TVelocity,
+  TScreenInfo,
+} from './typedefs';
 
 import Particle from './Particle';
 import { asteroidVertices, randomNumBetween } from './helpers';
@@ -36,7 +43,7 @@ export default class Asteroid implements IGameItem {
     this.create = props.create;
   }
 
-  calcParticlePosition(): TPosition {
+  calcInitialParticlePosition(): TPosition {
     const { radius } = this;
     let { x, y } = this.position;
     x += randomNumBetween(-radius / 4, radius / 4);
@@ -44,27 +51,31 @@ export default class Asteroid implements IGameItem {
     return { x, y };
   }
 
-  calcParticleVelocity(): TVelocity {
+  calcInitialParticleVelocity(): TVelocity {
     return { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) };
   }
 
-  createParticle() {
+  generateParticle() {
     const particle = new Particle({
-      position: this.calcParticlePosition(),
+      position: this.calcInitialParticlePosition(),
+      velocity: this.calcInitialParticleVelocity(),
       size: randomNumBetween(1, 3),
-      velocity: this.calcParticleVelocity(),
       lifeSpan: randomNumBetween(60, 100),
     });
     this.create(particle, GameItemGroup.particles);
   }
 
-  createAsteroid() {
-    let asteroid = new Asteroid({
+  calcInitialAsteroidPosition() {
+    let { x, y } = this.position;
+    x += randomNumBetween(-10, 20);
+    y += randomNumBetween(-10, 20);
+    return { x, y };
+  }
+
+  generateAsteroid() {
+    const asteroid = new Asteroid({
+      position: this.calcInitialAsteroidPosition(),
       size: this.radius / 2,
-      position: {
-        x: randomNumBetween(-10, 20) + this.position.x,
-        y: randomNumBetween(-10, 20) + this.position.y,
-      },
       create: this.create,
       addScore: this.addScore,
     });
@@ -77,13 +88,13 @@ export default class Asteroid implements IGameItem {
 
     // Explode
     for (let i = 0; i < this.radius; i++) {
-      this.createParticle();
+      this.generateParticle();
     }
 
     // Break into smaller asteroids
     if (this.radius > 10) {
       for (let i = 0; i < 2; i++) {
-        this.createAsteroid();
+        this.generateAsteroid();
       }
     }
   }
@@ -120,6 +131,12 @@ export default class Asteroid implements IGameItem {
     this.position = { x, y };
   }
 
+  update(screenInfo: TScreenInfo) {
+    this.move();
+    this.rotate();
+    this.adjustBounds(screenInfo);
+  }
+
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
@@ -137,9 +154,7 @@ export default class Asteroid implements IGameItem {
   }
 
   render({ screenInfo, ctx }: TGameItemRenderProps) {
-    this.move();
-    this.rotate();
-    this.adjustBounds(screenInfo);
+    this.update(screenInfo);
     this.draw(ctx);
   }
 }

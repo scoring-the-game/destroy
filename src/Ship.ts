@@ -1,4 +1,11 @@
-import { IGameItem, TPosition, TVelocity, GameItemGroup, TGameItemRenderProps, TScreenInfo } from './typedefs';
+import {
+  IGameItem,
+  TPosition,
+  TVelocity,
+  GameItemGroup,
+  TGameItemRenderProps,
+  TScreenInfo,
+} from './typedefs';
 
 import Bullet from './Bullet';
 import Particle, { TParticleProps } from './Particle';
@@ -141,6 +148,12 @@ export default class Ship implements IGameItem {
     this.position = { x, y };
   }
 
+  update(screenInfo: TScreenInfo) {
+    this.move(screenInfo);
+    this.clampRotation();
+    this.clampBounds(screenInfo);
+  }
+
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
@@ -162,9 +175,7 @@ export default class Ship implements IGameItem {
 
   render({ screenInfo, ctx, keys }: TGameItemRenderProps) {
     this.handleControls(keys);
-    this.move(screenInfo);
-    this.clampRotation();
-    this.clampBounds(screenInfo);
+    this.update(screenInfo);
     this.draw(ctx);
   }
 }
