@@ -25,10 +25,10 @@ import { randomNumBetweenExcluding } from './helpers';
 // -------------------------------------------------------------------------
 type TGameProps = {
   readonly screenInfo: TScreenInfo;
+  readonly keyStatus: TKeyStatus;
 };
 
 type TGameState = {
-  readonly keyStatus: TKeyStatus;
   readonly asteroidCount: number;
   readonly currentScore: number;
   readonly topScore: number;
@@ -38,83 +38,26 @@ type TGameState = {
 type TGameItemsMap = { [key in GameItemGroup]: IGameItem[] };
 
 // -------------------------------------------------------------------------
-const KEY = {
-  LEFT: 37,
-  RIGHT: 39,
-  UP: 38,
-  A: 65,
-  D: 68,
-  W: 87,
-  SPACE: 32,
-};
-
-const defaultKeyStatus: TKeyStatus = {
-  left: false,
-  right: false,
-  up: false,
-  down: false,
-  space: false,
-};
-
-// -------------------------------------------------------------------------
 export class Game extends React.Component<TGameProps, TGameState> {
   state: TGameState = {
-    keyStatus: defaultKeyStatus,
     asteroidCount: 3,
     currentScore: 0,
     topScore: localStorage['topscore'] || 0,
     inGame: false,
   };
 
-  itemsMap: TGameItemsMap = {
-    [GameItemGroup.ships]: [],
-    [GameItemGroup.asteroids]: [],
-    [GameItemGroup.bullets]: [],
-    [GameItemGroup.particles]: [],
-  };
+  itemsMap: TGameItemsMap;
 
   componentDidMount() {
     console.log('Game#componentDidMount');
-    this.addListeners();
-
     this.startGame();
     requestAnimationFrame(this.tick);
-  }
-
-  componentWillUnmount() {
-    this.removeListeners();
   }
 
   refCanvas: HTMLCanvasElement | null = null;
   setRefCanvas = (refCanvas: HTMLCanvasElement | null) => {
     this.refCanvas = refCanvas;
   };
-
-  addListeners() {
-    console.log('Game#addListeners');
-    window.addEventListener('keyup', this.handleKeyUp);
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  removeListeners() {
-    console.log('Game#removeListeners');
-    window.removeEventListener('keyup', this.handleKeyUp);
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeys(e, value: boolean) {
-    console.log('Game#handleKeys');
-    const { keyCode } = e;
-    let { keyStatus } = this.state;
-    if (keyCode === KEY.LEFT || keyCode === KEY.A) keyStatus = { ...keyStatus, left: value };
-    if (keyCode === KEY.RIGHT || keyCode === KEY.D) keyStatus = { ...keyStatus, right: value };
-    if (keyCode === KEY.UP || keyCode === KEY.W) keyStatus = { ...keyStatus, up: value };
-    if (keyCode === KEY.SPACE) keyStatus = { ...keyStatus, space: value };
-    this.setState({ keyStatus });
-  }
-
-  handleKeyUp = e => this.handleKeys(e, false);
-  handleKeyDown = e => this.handleKeys(e, true);
 
   handleClickTryAgain = () => this.startGame();
 
@@ -135,11 +78,18 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.setState(state => ({ currentScore: state.currentScore + points }));
   };
 
+  initializeItemsMap() {
+    this.itemsMap = {
+      [GameItemGroup.ships]: [],
+      [GameItemGroup.asteroids]: [],
+      [GameItemGroup.bullets]: [],
+      [GameItemGroup.particles]: [],
+    };
+  }
+
   startGame() {
     this.setState({ inGame: true, currentScore: 0 });
-
-    this.itemsMap[GameItemGroup.asteroids] = [];
-
+    this.initializeItemsMap();
     this.generateShip();
     this.generateAsteroids(this.state.asteroidCount);
   }
@@ -171,9 +121,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
   };
 
   generateShip() {
-    const {
-      screenInfo: { width, height },
-    } = this.props;
+    const { screenInfo: { width, height } } = this.props;
     const ship = new Ship({
       position: { x: width / 2, y: height / 2 },
       create: this.createObject,
@@ -207,8 +155,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
   tick = () => {
     // console.log('Game#update');
     const ctx = this.refCanvas.getContext('2d');
-    const { screenInfo } = this.props;
-    const { keyStatus } = this.state;
+    const { screenInfo, keyStatus } = this.props;
 
     this.drawBkgnd(ctx, screenInfo);
 
@@ -250,8 +197,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     itemsMap = { ...itemsMap, [group]: items };
     this.itemsMap = itemsMap;
 
-    const { screenInfo } = this.props;
-    const { keyStatus } = this.state;
+    const { screenInfo, keyStatus } = this.props;
     const renderProps = { ctx, keyStatus, screenInfo };
     items.forEach(item => item.render(renderProps));
   }
@@ -278,9 +224,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
   render() {
     console.log('Game#render');
-    const {
-      screenInfo: { width, height, ratio },
-    } = this.props;
+    const { screenInfo: { width, height, ratio } } = this.props;
     const { currentScore, topScore, inGame } = this.state;
     return (
       <div>
