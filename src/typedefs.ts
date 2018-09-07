@@ -14,7 +14,7 @@ export type TScreenInfo = {
   readonly ratio: number;
 };
 
-export const enum GameItemGroup {
+export const enum GameItemType {
   ships = 'ships',
   asteroids = 'asteroids',
   bullets = 'bullets',
@@ -37,6 +37,7 @@ export type TGameItemRenderProps = {
 
 export interface IGameItem {
   // fields:
+  type: GameItemType;
   isDeleted: boolean;
   position: TPosition;
   radius: number;

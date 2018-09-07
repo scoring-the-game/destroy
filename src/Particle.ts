@@ -1,4 +1,4 @@
-import { IGameItem, TPosition, TVelocity, TGameItemRenderProps, TScreenInfo } from './typedefs';
+import { IGameItem, TPosition, TVelocity, TGameItemRenderProps, TScreenInfo, GameItemType } from './typedefs';
 
 export type TParticleProps = {
   readonly position: TPosition;
@@ -8,6 +8,7 @@ export type TParticleProps = {
 };
 
 export default class Particle implements IGameItem {
+  type: GameItemType;
   position: TPosition;
   velocity: TVelocity;
   radius: number;
@@ -17,6 +18,7 @@ export default class Particle implements IGameItem {
   isDeleted: boolean;
 
   constructor(props: TParticleProps) {
+    this.type = GameItemType.particles;
     this.position = props.position;
     this.velocity = props.velocity;
     this.radius = props.size;

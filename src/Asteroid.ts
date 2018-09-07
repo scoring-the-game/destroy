@@ -1,6 +1,6 @@
 import {
   IGameItem,
-  GameItemGroup,
+  GameItemType,
   TGameItemRenderProps,
   TPosition,
   TVelocity,
@@ -13,11 +13,12 @@ import { asteroidVertices, randomNumBetween } from './helpers';
 export type TAsteroidProps = {
   readonly position: TPosition;
   readonly size: number;
-  readonly create: (item: IGameItem, group: GameItemGroup) => void;
+  readonly registerItem: (item: IGameItem) => void;
   readonly incrementScore: (score: number) => void;
 };
 
 export default class Asteroid implements IGameItem {
+  type: GameItemType;
   position: TPosition;
   velocity: TVelocity;
   rotation: number;
@@ -28,9 +29,10 @@ export default class Asteroid implements IGameItem {
   isDeleted: boolean;
 
   incrementScore: (score: number) => void;
-  create: (item: IGameItem, group: GameItemGroup) => void;
+  registerItem: (item: IGameItem) => void;
 
   constructor(props: TAsteroidProps) {
+    this.type = GameItemType.asteroids;
     this.position = props.position;
     this.velocity = { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) };
     this.rotation = 0;
@@ -40,7 +42,7 @@ export default class Asteroid implements IGameItem {
     this.vertices = asteroidVertices(8, props.size);
 
     this.incrementScore = props.incrementScore;
-    this.create = props.create;
+    this.registerItem = props.registerItem;
   }
 
   calcInitialParticlePosition(): TPosition {
@@ -62,7 +64,7 @@ export default class Asteroid implements IGameItem {
       size: randomNumBetween(1, 3),
       lifeSpan: randomNumBetween(60, 100),
     });
-    this.create(particle, GameItemGroup.particles);
+    this.registerItem(particle);
   }
 
   calcInitialAsteroidPosition() {
@@ -76,10 +78,10 @@ export default class Asteroid implements IGameItem {
     const asteroid = new Asteroid({
       position: this.calcInitialAsteroidPosition(),
       size: this.radius / 2,
-      create: this.create,
+      registerItem: this.registerItem,
       incrementScore: this.incrementScore,
     });
-    this.create(asteroid, GameItemGroup.asteroids);
+    this.registerItem(asteroid);
   }
 
   destroy() {

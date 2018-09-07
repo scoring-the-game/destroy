@@ -2,7 +2,7 @@ import {
   IGameItem,
   TPosition,
   TVelocity,
-  GameItemGroup,
+  GameItemType,
   TGameItemRenderProps,
   TScreenInfo,
   TKeyStatus,
@@ -14,7 +14,7 @@ import { rotatePoint, randomNumBetween } from './helpers';
 
 export type TShipProps = {
   readonly position: TPosition;
-  readonly create: (item: IGameItem, group: GameItemGroup) => void;
+  readonly registerItem: (item: IGameItem) => void;
   readonly onDie: () => void;
 };
 
@@ -24,6 +24,7 @@ const enum RotationDirection {
 }
 
 export default class Ship implements IGameItem {
+  type: GameItemType;
   position: TPosition;
   velocity: TVelocity;
   rotation: number;
@@ -34,10 +35,11 @@ export default class Ship implements IGameItem {
   lastShot: number;
   isDeleted: boolean;
 
-  create: (item: IGameItem, group: GameItemGroup) => void;
+  registerItem: (item: IGameItem) => void;
   onDie: () => void;
 
-  constructor(props) {
+  constructor(props: TShipProps) {
+    this.type = GameItemType.ships;
     this.position = props.position;
     this.velocity = { dx: 0, dy: 0 };
     this.rotation = 0;
@@ -46,13 +48,13 @@ export default class Ship implements IGameItem {
     this.inertia = 0.99;
     this.radius = 20;
     this.lastShot = 0;
-    this.create = props.create;
+    this.registerItem = props.registerItem;
     this.onDie = props.onDie;
   }
 
   createParticle(props: TParticleProps) {
     const particle = new Particle(props);
-    this.create(particle, GameItemGroup.particles);
+    this.registerItem(particle);
   }
 
   explode() {
@@ -111,7 +113,7 @@ export default class Ship implements IGameItem {
   fireBullet() {
     console.log('Ship#fireBullet');
     const bullet = new Bullet({ position: this.position, rotation: this.rotation });
-    this.create(bullet, GameItemGroup.bullets);
+    this.registerItem(bullet);
     this.lastShot = Date.now();
   }
 

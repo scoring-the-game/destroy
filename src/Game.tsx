@@ -3,7 +3,7 @@ import {
   TVelocity,
   TScreenInfo,
   IGameItem,
-  GameItemGroup,
+  GameItemType,
   TKeyStatus,
 } from './typedefs';
 
@@ -35,7 +35,7 @@ type TGameState = {
   readonly inGame: boolean;
 };
 
-type TGameItemsMap = { [key in GameItemGroup]: IGameItem[] };
+type TGameItemsMap = { [key in GameItemType]: IGameItem[] };
 
 // -------------------------------------------------------------------------
 export class Game extends React.Component<TGameProps, TGameState> {
@@ -80,10 +80,10 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
   initializeItemsMap() {
     this.itemsMap = {
-      [GameItemGroup.ships]: [],
-      [GameItemGroup.asteroids]: [],
-      [GameItemGroup.bullets]: [],
-      [GameItemGroup.particles]: [],
+      [GameItemType.ships]: [],
+      [GameItemType.asteroids]: [],
+      [GameItemType.bullets]: [],
+      [GameItemType.particles]: [],
     };
   }
 
@@ -107,14 +107,15 @@ export class Game extends React.Component<TGameProps, TGameState> {
     }
   };
 
-  createObject = (item: IGameItem, group: GameItemGroup) => {
-    console.log('Game#createObject', { item, group });
+  updateItemsMap = (item: IGameItem) => {
+    const { type } = item;
+    console.log('Game#createObject', { item, type });
     let { itemsMap } = this;
-    let items = itemsMap[group];
+    let items = itemsMap[type];
     console.log('Game#createObject/1: items =>', items);
     items = [...items, item];
     console.log('Game#createObject/2: items =>', items);
-    itemsMap = { ...itemsMap, [group]: items };
+    itemsMap = { ...itemsMap, [type]: items };
     console.log('Game#createObject/3 =>', itemsMap);
     this.itemsMap = itemsMap;
     console.log('Game#createObject/4');
@@ -124,11 +125,11 @@ export class Game extends React.Component<TGameProps, TGameState> {
     const { screenInfo: { width, height } } = this.props;
     const ship = new Ship({
       position: { x: width / 2, y: height / 2 },
-      create: this.createObject,
+      registerItem: this.updateItemsMap,
       onDie: this.endGame,
     });
     console.log('Game#startGame/3', { ship });
-    this.createObject(ship, GameItemGroup.ships);
+    this.updateItemsMap(ship);
   }
 
   generateAsteroid({ width, height }: TScreenInfo, { x, y }: TPosition) {
@@ -138,15 +139,15 @@ export class Game extends React.Component<TGameProps, TGameState> {
         x: randomNumBetweenExcluding(0, width, x - 60, x + 60),
         y: randomNumBetweenExcluding(0, height, y - 60, y + 60),
       },
-      create: this.createObject,
+      registerItem: this.updateItemsMap,
       incrementScore: this.incrementScore,
     });
-    this.createObject(asteroid, GameItemGroup.asteroids);
+    this.updateItemsMap(asteroid);
   }
 
   generateAsteroids(howMany: number) {
     const { screenInfo } = this.props;
-    const { position } = this.itemsMap[GameItemGroup.ships][0];
+    const { position } = this.itemsMap[GameItemType.ships][0];
     for (let i = 0; i < howMany; i++) {
       this.generateAsteroid(screenInfo, position);
     }
@@ -159,10 +160,10 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
     this.drawBkgnd(ctx, screenInfo);
 
-    // const ship = this.itemsMap[GameItemGroup.ships][0];
+    // const ship = this.itemsMap[GameItemType.ships][0];
 
     // Next set of asteroids
-    if (this.itemsMap[GameItemGroup.asteroids].length === 0) {
+    if (this.itemsMap[GameItemType.asteroids].length === 0) {
       let count = this.state.asteroidCount + 1;
       this.setState({ asteroidCount: count });
       this.generateAsteroids(count);
@@ -170,19 +171,19 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
     // Check for colisions
     this.checkCollisionsWith(
-      this.itemsMap[GameItemGroup.bullets],
-      this.itemsMap[GameItemGroup.asteroids]
+      this.itemsMap[GameItemType.bullets],
+      this.itemsMap[GameItemType.asteroids]
     );
     this.checkCollisionsWith(
-      this.itemsMap[GameItemGroup.ships],
-      this.itemsMap[GameItemGroup.asteroids]
+      this.itemsMap[GameItemType.ships],
+      this.itemsMap[GameItemType.asteroids]
     );
 
     // Remove or render
-    this.updateObjects(ctx, this.itemsMap[GameItemGroup.particles], GameItemGroup.particles);
-    this.updateObjects(ctx, this.itemsMap[GameItemGroup.asteroids], GameItemGroup.asteroids);
-    this.updateObjects(ctx, this.itemsMap[GameItemGroup.bullets], GameItemGroup.bullets);
-    this.updateObjects(ctx, this.itemsMap[GameItemGroup.ships], GameItemGroup.ships);
+    this.updateObjects(ctx, this.itemsMap[GameItemType.particles], GameItemType.particles);
+    this.updateObjects(ctx, this.itemsMap[GameItemType.asteroids], GameItemType.asteroids);
+    this.updateObjects(ctx, this.itemsMap[GameItemType.bullets], GameItemType.bullets);
+    this.updateObjects(ctx, this.itemsMap[GameItemType.ships], GameItemType.ships);
 
     ctx.restore();
 
@@ -190,7 +191,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     requestAnimationFrame(this.tick);
   };
 
-  updateObjects(ctx: any, items: IGameItem[], group: GameItemGroup) {
+  updateObjects(ctx: any, items: IGameItem[], group: GameItemType) {
     items = items.filter(item => !item.isDeleted);
 
     let { itemsMap } = this;
