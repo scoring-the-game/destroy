@@ -122,6 +122,10 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.updateActorsMap(ship);
   }
 
+  getShipPosition(): TCoord {
+    return this.actorsMap[ActorType.ships][0].position;
+  }
+
   generateAsteroid({ width, height }: TScreenInfo, { x, y }: TCoord) {
     const asteroid = new Asteroid({
       size: 80,
@@ -137,7 +141,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
   generateAsteroids(howMany: number) {
     const { screenInfo } = this.props;
-    const { position } = this.actorsMap[ActorType.ships][0];
+    const position = this.getShipPosition();
     for (let i = 0; i < howMany; i++) {
       this.generateAsteroid(screenInfo, position);
     }
