@@ -29,8 +29,15 @@ export const enum ActorType {
   particles = 'particles',
 }
 
+/*
 export type TActorRenderProps = {
   readonly ctx: any;
+  readonly keyStatus: TKeyStatus;
+  readonly screenInfo: TScreenInfo;
+};
+*/
+
+export type TActorEvolveProps = {
   readonly keyStatus: TKeyStatus;
   readonly screenInfo: TScreenInfo;
 };
@@ -43,6 +50,8 @@ export interface IActor {
   radius: number;
 
   // methods:
-  render: (props: TActorRenderProps) => void;
+  evolve: (props: TActorEvolveProps) => void;
+  draw: (ctx: any) => void;
+  // render: (props: TActorRenderProps) => void;
   destroy: () => void;
 }

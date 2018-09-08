@@ -5,6 +5,7 @@ import {
   IActor,
   ActorType,
   TKeyStatus,
+  TActorEvolveProps,
 } from '../typedefs';
 
 // -------------------------------------------------------------------------
@@ -147,12 +148,24 @@ export class Game extends React.Component<TGameProps, TGameState> {
     }
   }
 
+  removeDeletedActors(actors: IActor[]) {
+    if (actors.length === 0) return;
+    const { type } = actors[0];
+    actors = actors.filter(actor => !actor.isDeleted);
+    this.actorsMap[type] = actors;
+  }
+
+  evolveActors(props: TActorEvolveProps, actors: IActor[]) {
+    actors.forEach(actor => actor.evolve(props));
+  }
+
+  drawActors(ctx: any, actors: IActor[]) {
+    actors.forEach(actor => actor.draw(ctx));
+  }
+
   handleAnimationFrame = () => {
     // console.log('Game#update');
-    const ctx = this.refCanvas.getContext('2d');
     const { screenInfo, keyStatus } = this.props;
-
-    this.drawBkgnd(ctx, screenInfo);
 
     // const ship = this.actorsMap[ActorType.ships][0];
 
@@ -173,29 +186,28 @@ export class Game extends React.Component<TGameProps, TGameState> {
       this.actorsMap[ActorType.asteroids]
     );
 
-    // Remove or render
-    this.updateActors(ctx, this.actorsMap[ActorType.particles], ActorType.particles);
-    this.updateActors(ctx, this.actorsMap[ActorType.asteroids], ActorType.asteroids);
-    this.updateActors(ctx, this.actorsMap[ActorType.bullets], ActorType.bullets);
-    this.updateActors(ctx, this.actorsMap[ActorType.ships], ActorType.ships);
+    this.removeDeletedActors(this.actorsMap[ActorType.particles]);
+    this.removeDeletedActors(this.actorsMap[ActorType.asteroids]);
+    this.removeDeletedActors(this.actorsMap[ActorType.bullets]);
+    this.removeDeletedActors(this.actorsMap[ActorType.ships]);
 
+    const evolveProps = { screenInfo, keyStatus };
+    this.evolveActors(evolveProps, this.actorsMap[ActorType.particles]);
+    this.evolveActors(evolveProps, this.actorsMap[ActorType.asteroids]);
+    this.evolveActors(evolveProps, this.actorsMap[ActorType.bullets]);
+    this.evolveActors(evolveProps, this.actorsMap[ActorType.ships]);
+
+    const ctx = this.refCanvas.getContext('2d');
+    this.drawBkgnd(ctx, this.props.screenInfo);
+    this.drawActors(ctx, this.actorsMap[ActorType.particles]);
+    this.drawActors(ctx, this.actorsMap[ActorType.asteroids]);
+    this.drawActors(ctx, this.actorsMap[ActorType.bullets]);
+    this.drawActors(ctx, this.actorsMap[ActorType.ships]);
     ctx.restore();
 
     // Next frame
     requestAnimationFrame(this.handleAnimationFrame);
   };
-
-  updateActors(ctx: any, actors: IActor[], group: ActorType) {
-    actors = actors.filter(actor => !actor.isDeleted);
-
-    let { actorsMap } = this;
-    actorsMap = { ...actorsMap, [group]: actors };
-    this.actorsMap = actorsMap;
-
-    const { screenInfo, keyStatus } = this.props;
-    const renderProps = { ctx, keyStatus, screenInfo };
-    actors.forEach(actor => actor.render(renderProps));
-  }
 
   checkCollisionsWith(actors1: IActor[], actors2: IActor[]) {
     for (let a = actors1.length - 1; a > -1; --a) {

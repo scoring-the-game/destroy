@@ -3,7 +3,7 @@ import {
   TCoord,
   TVelocity,
   ActorType,
-  TActorRenderProps,
+  TActorEvolveProps,
   TScreenInfo,
   TKeyStatus,
 } from '../typedefs';
@@ -155,7 +155,8 @@ export default class Ship implements IActor {
     this.position = { x, y };
   }
 
-  update(screenInfo: TScreenInfo) {
+  evolve({ screenInfo, keyStatus }: TActorEvolveProps) {
+    this.handleControls(keyStatus);
     this.move(screenInfo);
     this.clampRotation();
     this.clampBounds(screenInfo);
@@ -180,9 +181,11 @@ export default class Ship implements IActor {
     ctx.restore();
   }
 
+  /*
   render({ screenInfo, ctx, keyStatus }: TActorRenderProps) {
     this.handleControls(keyStatus);
     this.update(screenInfo);
     this.draw(ctx);
   }
+  */
 }
