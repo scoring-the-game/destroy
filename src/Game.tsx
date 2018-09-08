@@ -108,17 +108,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
   };
 
   updateItemsMap = (item: IGameItem) => {
-    const { type } = item;
-    console.log('Game#createObject', { item, type });
-    let { itemsMap } = this;
-    let items = itemsMap[type];
-    console.log('Game#createObject/1: items =>', items);
-    items = [...items, item];
-    console.log('Game#createObject/2: items =>', items);
-    itemsMap = { ...itemsMap, [type]: items };
-    console.log('Game#createObject/3 =>', itemsMap);
-    this.itemsMap = itemsMap;
-    console.log('Game#createObject/4');
+    this.itemsMap[item.type].push(item);
   };
 
   generateShip() {
