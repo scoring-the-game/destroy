@@ -94,7 +94,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.generateAsteroids(this.state.asteroidCount);
   }
 
-  endGame = () => {
+  handleShipDie = () => {
     this.setState({ inGame: false });
 
     // Replace top score
@@ -115,8 +115,8 @@ export class Game extends React.Component<TGameProps, TGameState> {
     const { screenInfo: { width, height } } = this.props;
     const ship = new Ship({
       position: { x: width / 2, y: height / 2 },
-      onDie: this.endGame,
       registerActor: this.updateActorsMap,
+      onDie: this.handleShipDie,
     });
     console.log('Game#startGame/3', { ship });
     this.updateActorsMap(ship);
