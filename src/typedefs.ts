@@ -14,13 +14,6 @@ export type TScreenInfo = {
   readonly ratio: number;
 };
 
-export const enum GameItemType {
-  ships = 'ships',
-  asteroids = 'asteroids',
-  bullets = 'bullets',
-  particles = 'particles',
-}
-
 export type TKeyStatus = {
   readonly left: boolean;
   readonly right: boolean;
@@ -29,20 +22,27 @@ export type TKeyStatus = {
   readonly space: boolean;
 };
 
-export type TGameItemRenderProps = {
+export const enum ActorType {
+  ships = 'ships',
+  asteroids = 'asteroids',
+  bullets = 'bullets',
+  particles = 'particles',
+}
+
+export type TActorRenderProps = {
   readonly ctx: any;
   readonly keyStatus: TKeyStatus;
   readonly screenInfo: TScreenInfo;
 };
 
-export interface IGameItem {
+export interface IActor {
   // fields:
-  type: GameItemType;
+  type: ActorType;
   isDeleted: boolean;
   position: TCoord;
   radius: number;
 
   // methods:
-  render: (props: TGameItemRenderProps) => void;
+  render: (props: TActorRenderProps) => void;
   destroy: () => void;
 }

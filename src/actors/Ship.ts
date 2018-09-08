@@ -1,9 +1,9 @@
 import {
-  IGameItem,
+  IActor,
   TCoord,
   TVelocity,
-  GameItemType,
-  TGameItemRenderProps,
+  ActorType,
+  TActorRenderProps,
   TScreenInfo,
   TKeyStatus,
 } from '../typedefs';
@@ -16,7 +16,7 @@ import { rotatePoint, randomNumBetween } from '../helpers';
 // -------------------------------------------------------------------------
 export type TShipProps = {
   readonly position: TCoord;
-  readonly registerItem: (item: IGameItem) => void;
+  readonly registerActor: (item: IActor) => void;
   readonly onDie: () => void;
 };
 
@@ -27,8 +27,8 @@ const enum RotationDirection {
 }
 
 // -------------------------------------------------------------------------
-export default class Ship implements IGameItem {
-  type: GameItemType;
+export default class Ship implements IActor {
+  type: ActorType;
   position: TCoord;
   velocity: TVelocity;
   rotation: number;
@@ -39,11 +39,11 @@ export default class Ship implements IGameItem {
   lastShot: number;
   isDeleted: boolean;
 
-  registerItem: (item: IGameItem) => void;
+  registerActor: (item: IActor) => void;
   onDie: () => void;
 
   constructor(props: TShipProps) {
-    this.type = GameItemType.ships;
+    this.type = ActorType.ships;
     this.position = props.position;
     this.velocity = { dx: 0, dy: 0 };
     this.rotation = 0;
@@ -52,13 +52,13 @@ export default class Ship implements IGameItem {
     this.inertia = 0.99;
     this.radius = 20;
     this.lastShot = 0;
-    this.registerItem = props.registerItem;
+    this.registerActor = props.registerActor;
     this.onDie = props.onDie;
   }
 
   createParticle(props: TParticleProps) {
     const particle = new Particle(props);
-    this.registerItem(particle);
+    this.registerActor(particle);
   }
 
   explode() {
@@ -114,7 +114,7 @@ export default class Ship implements IGameItem {
   fireBullet() {
     console.log('Ship#fireBullet');
     const bullet = new Bullet({ position: this.position, rotation: this.rotation });
-    this.registerItem(bullet);
+    this.registerActor(bullet);
     this.lastShot = Date.now();
   }
 
@@ -180,7 +180,7 @@ export default class Ship implements IGameItem {
     ctx.restore();
   }
 
-  render({ screenInfo, ctx, keyStatus }: TGameItemRenderProps) {
+  render({ screenInfo, ctx, keyStatus }: TActorRenderProps) {
     this.handleControls(keyStatus);
     this.update(screenInfo);
     this.draw(ctx);

@@ -1,10 +1,10 @@
 import {
-  IGameItem,
+  IActor,
   TCoord,
   TVelocity,
-  TGameItemRenderProps,
+  TActorRenderProps,
   TScreenInfo,
-  GameItemType,
+  ActorType,
 } from '../typedefs';
 
 // -------------------------------------------------------------------------
@@ -16,8 +16,8 @@ export type TParticleProps = {
 };
 
 // -------------------------------------------------------------------------
-export default class Particle implements IGameItem {
-  type: GameItemType;
+export default class Particle implements IActor {
+  type: ActorType;
   position: TCoord;
   velocity: TVelocity;
   radius: number;
@@ -27,7 +27,7 @@ export default class Particle implements IGameItem {
   isDeleted: boolean;
 
   constructor(props: TParticleProps) {
-    this.type = GameItemType.particles;
+    this.type = ActorType.particles;
     this.position = props.position;
     this.velocity = props.velocity;
     this.radius = props.size;
@@ -81,7 +81,7 @@ export default class Particle implements IGameItem {
     ctx.restore();
   }
 
-  render({ screenInfo, ctx }: TGameItemRenderProps) {
+  render({ screenInfo, ctx }: TActorRenderProps) {
     this.update(screenInfo);
     this.draw(ctx);
   }

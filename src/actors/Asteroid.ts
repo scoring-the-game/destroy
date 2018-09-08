@@ -1,7 +1,7 @@
 import {
-  IGameItem,
-  GameItemType,
-  TGameItemRenderProps,
+  IActor,
+  ActorType,
+  TActorRenderProps,
   TCoord,
   TVelocity,
   TScreenInfo,
@@ -15,13 +15,13 @@ import { asteroidVertices, randomNumBetween } from '../helpers';
 export type TAsteroidProps = {
   readonly position: TCoord;
   readonly size: number;
-  readonly registerItem: (item: IGameItem) => void;
+  readonly registerActor: (item: IActor) => void;
   readonly incrementScore: (score: number) => void;
 };
 
 // -------------------------------------------------------------------------
-export default class Asteroid implements IGameItem {
-  type: GameItemType;
+export default class Asteroid implements IActor {
+  type: ActorType;
   position: TCoord;
   velocity: TVelocity;
   rotation: number;
@@ -32,10 +32,10 @@ export default class Asteroid implements IGameItem {
   isDeleted: boolean;
 
   incrementScore: (score: number) => void;
-  registerItem: (item: IGameItem) => void;
+  registerActor: (item: IActor) => void;
 
   constructor(props: TAsteroidProps) {
-    this.type = GameItemType.asteroids;
+    this.type = ActorType.asteroids;
     this.position = props.position;
     this.velocity = { dx: randomNumBetween(-1.5, 1.5), dy: randomNumBetween(-1.5, 1.5) };
     this.rotation = 0;
@@ -45,7 +45,7 @@ export default class Asteroid implements IGameItem {
     this.vertices = asteroidVertices(8, props.size);
 
     this.incrementScore = props.incrementScore;
-    this.registerItem = props.registerItem;
+    this.registerActor = props.registerActor;
   }
 
   calcInitialParticlePosition(): TCoord {
@@ -67,7 +67,7 @@ export default class Asteroid implements IGameItem {
       size: randomNumBetween(1, 3),
       lifeSpan: randomNumBetween(60, 100),
     });
-    this.registerItem(particle);
+    this.registerActor(particle);
   }
 
   calcInitialAsteroidPosition() {
@@ -81,10 +81,10 @@ export default class Asteroid implements IGameItem {
     const asteroid = new Asteroid({
       position: this.calcInitialAsteroidPosition(),
       size: this.radius / 2,
-      registerItem: this.registerItem,
+      registerActor: this.registerActor,
       incrementScore: this.incrementScore,
     });
-    this.registerItem(asteroid);
+    this.registerActor(asteroid);
   }
 
   destroy() {
@@ -158,7 +158,7 @@ export default class Asteroid implements IGameItem {
     ctx.restore();
   }
 
-  render({ screenInfo, ctx }: TGameItemRenderProps) {
+  render({ screenInfo, ctx }: TActorRenderProps) {
     this.update(screenInfo);
     this.draw(ctx);
   }

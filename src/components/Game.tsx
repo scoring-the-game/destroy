@@ -2,8 +2,8 @@ import {
   TCoord,
   TVelocity,
   TScreenInfo,
-  IGameItem,
-  GameItemType,
+  IActor,
+  ActorType,
   TKeyStatus,
 } from '../typedefs';
 
@@ -35,7 +35,7 @@ type TGameState = {
   readonly inGame: boolean;
 };
 
-type TGameItemsMap = { [key in GameItemType]: IGameItem[] };
+type TActorsMap = { [key in ActorType]: IActor[] };
 
 // -------------------------------------------------------------------------
 export class Game extends React.Component<TGameProps, TGameState> {
@@ -46,7 +46,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     inGame: false,
   };
 
-  itemsMap: TGameItemsMap;
+  actorsMap: TActorsMap;
 
   componentDidMount() {
     console.log('Game#componentDidMount');
@@ -78,18 +78,18 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.setState(state => ({ currentScore: state.currentScore + points }));
   };
 
-  initializeItemsMap() {
-    this.itemsMap = {
-      [GameItemType.ships]: [],
-      [GameItemType.asteroids]: [],
-      [GameItemType.bullets]: [],
-      [GameItemType.particles]: [],
+  initializeActorsMap() {
+    this.actorsMap = {
+      [ActorType.ships]: [],
+      [ActorType.asteroids]: [],
+      [ActorType.bullets]: [],
+      [ActorType.particles]: [],
     };
   }
 
   startGame() {
     this.setState({ inGame: true, currentScore: 0 });
-    this.initializeItemsMap();
+    this.initializeActorsMap();
     this.generateShip();
     this.generateAsteroids(this.state.asteroidCount);
   }
@@ -107,19 +107,19 @@ export class Game extends React.Component<TGameProps, TGameState> {
     }
   };
 
-  updateItemsMap = (item: IGameItem) => {
-    this.itemsMap[item.type].push(item);
+  updateActorsMap = (actor: IActor) => {
+    this.actorsMap[actor.type].push(actor);
   };
 
   generateShip() {
     const { screenInfo: { width, height } } = this.props;
     const ship = new Ship({
       position: { x: width / 2, y: height / 2 },
-      registerItem: this.updateItemsMap,
       onDie: this.endGame,
+      registerActor: this.updateActorsMap,
     });
     console.log('Game#startGame/3', { ship });
-    this.updateItemsMap(ship);
+    this.updateActorsMap(ship);
   }
 
   generateAsteroid({ width, height }: TScreenInfo, { x, y }: TCoord) {
@@ -129,15 +129,15 @@ export class Game extends React.Component<TGameProps, TGameState> {
         x: randomNumBetweenExcluding(0, width, x - 60, x + 60),
         y: randomNumBetweenExcluding(0, height, y - 60, y + 60),
       },
-      registerItem: this.updateItemsMap,
+      registerActor: this.updateActorsMap,
       incrementScore: this.incrementScore,
     });
-    this.updateItemsMap(asteroid);
+    this.updateActorsMap(asteroid);
   }
 
   generateAsteroids(howMany: number) {
     const { screenInfo } = this.props;
-    const { position } = this.itemsMap[GameItemType.ships][0];
+    const { position } = this.actorsMap[ActorType.ships][0];
     for (let i = 0; i < howMany; i++) {
       this.generateAsteroid(screenInfo, position);
     }
@@ -150,10 +150,10 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
     this.drawBkgnd(ctx, screenInfo);
 
-    // const ship = this.itemsMap[GameItemType.ships][0];
+    // const ship = this.actorsMap[ActorType.ships][0];
 
     // Next set of asteroids
-    if (this.itemsMap[GameItemType.asteroids].length === 0) {
+    if (this.actorsMap[ActorType.asteroids].length === 0) {
       let count = this.state.asteroidCount + 1;
       this.setState({ asteroidCount: count });
       this.generateAsteroids(count);
@@ -161,19 +161,19 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
     // Check for colisions
     this.checkCollisionsWith(
-      this.itemsMap[GameItemType.bullets],
-      this.itemsMap[GameItemType.asteroids]
+      this.actorsMap[ActorType.bullets],
+      this.actorsMap[ActorType.asteroids]
     );
     this.checkCollisionsWith(
-      this.itemsMap[GameItemType.ships],
-      this.itemsMap[GameItemType.asteroids]
+      this.actorsMap[ActorType.ships],
+      this.actorsMap[ActorType.asteroids]
     );
 
     // Remove or render
-    this.updateObjects(ctx, this.itemsMap[GameItemType.particles], GameItemType.particles);
-    this.updateObjects(ctx, this.itemsMap[GameItemType.asteroids], GameItemType.asteroids);
-    this.updateObjects(ctx, this.itemsMap[GameItemType.bullets], GameItemType.bullets);
-    this.updateObjects(ctx, this.itemsMap[GameItemType.ships], GameItemType.ships);
+    this.updateActors(ctx, this.actorsMap[ActorType.particles], ActorType.particles);
+    this.updateActors(ctx, this.actorsMap[ActorType.asteroids], ActorType.asteroids);
+    this.updateActors(ctx, this.actorsMap[ActorType.bullets], ActorType.bullets);
+    this.updateActors(ctx, this.actorsMap[ActorType.ships], ActorType.ships);
 
     ctx.restore();
 
@@ -181,36 +181,36 @@ export class Game extends React.Component<TGameProps, TGameState> {
     requestAnimationFrame(this.tick);
   };
 
-  updateObjects(ctx: any, items: IGameItem[], group: GameItemType) {
-    items = items.filter(item => !item.isDeleted);
+  updateActors(ctx: any, actors: IActor[], group: ActorType) {
+    actors = actors.filter(actor => !actor.isDeleted);
 
-    let { itemsMap } = this;
-    itemsMap = { ...itemsMap, [group]: items };
-    this.itemsMap = itemsMap;
+    let { actorsMap } = this;
+    actorsMap = { ...actorsMap, [group]: actors };
+    this.actorsMap = actorsMap;
 
     const { screenInfo, keyStatus } = this.props;
     const renderProps = { ctx, keyStatus, screenInfo };
-    items.forEach(item => item.render(renderProps));
+    actors.forEach(actor => actor.render(renderProps));
   }
 
-  checkCollisionsWith(items1: IGameItem[], items2: IGameItem[]) {
-    for (let a = items1.length - 1; a > -1; --a) {
-      for (let b = items2.length - 1; b > -1; --b) {
-        var item1 = items1[a];
-        var item2 = items2[b];
-        if (this.checkCollision(item1, item2)) {
-          item1.destroy();
-          item2.destroy();
+  checkCollisionsWith(actors1: IActor[], actors2: IActor[]) {
+    for (let a = actors1.length - 1; a > -1; --a) {
+      for (let b = actors2.length - 1; b > -1; --b) {
+        var actor1 = actors1[a];
+        var actor2 = actors2[b];
+        if (this.checkCollision(actor1, actor2)) {
+          actor1.destroy();
+          actor2.destroy();
         }
       }
     }
   }
 
-  checkCollision(obj1: IGameItem, obj2: IGameItem) {
-    const dx = obj1.position.x - obj2.position.x;
-    const dy = obj1.position.y - obj2.position.y;
+  checkCollision(actor1: IActor, actor2: IActor) {
+    const dx = actor1.position.x - actor2.position.x;
+    const dy = actor1.position.y - actor2.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < obj1.radius + obj2.radius;
+    return distance < actor1.radius + actor2.radius;
   }
 
   render() {

@@ -1,10 +1,10 @@
 import {
   TCoord,
   TVelocity,
-  IGameItem,
-  TGameItemRenderProps,
+  IActor,
+  TActorRenderProps,
   TScreenInfo,
-  GameItemType,
+  ActorType,
 } from '../typedefs';
 
 // -------------------------------------------------------------------------
@@ -17,8 +17,8 @@ export type TBulletProps = {
 };
 
 // -------------------------------------------------------------------------
-export default class Bullet implements IGameItem {
-  type: GameItemType;
+export default class Bullet implements IActor {
+  type: ActorType;
   position: TCoord;
   rotation: number;
   velocity: TVelocity;
@@ -26,7 +26,7 @@ export default class Bullet implements IGameItem {
   isDeleted: boolean = false;
 
   constructor({ position, rotation }: TBulletProps) {
-    this.type = GameItemType.bullets;
+    this.type = ActorType.bullets;
 
     const { x: dx, y: dy } = rotatePoint(
       { x: 0, y: -20 },
@@ -77,7 +77,7 @@ export default class Bullet implements IGameItem {
     ctx.restore();
   }
 
-  render({ screenInfo, ctx }: TGameItemRenderProps) {
+  render({ screenInfo, ctx }: TActorRenderProps) {
     this.update(screenInfo);
     this.draw(ctx);
   }
