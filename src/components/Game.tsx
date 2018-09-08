@@ -51,7 +51,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
   componentDidMount() {
     console.log('Game#componentDidMount');
     this.startGame();
-    requestAnimationFrame(this.tick);
+    requestAnimationFrame(this.handleAnimationFrame);
   }
 
   refCanvas: HTMLCanvasElement | null = null;
@@ -147,7 +147,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     }
   }
 
-  tick = () => {
+  handleAnimationFrame = () => {
     // console.log('Game#update');
     const ctx = this.refCanvas.getContext('2d');
     const { screenInfo, keyStatus } = this.props;
@@ -182,7 +182,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     ctx.restore();
 
     // Next frame
-    requestAnimationFrame(this.tick);
+    requestAnimationFrame(this.handleAnimationFrame);
   };
 
   updateActors(ctx: any, actors: IActor[], group: ActorType) {
