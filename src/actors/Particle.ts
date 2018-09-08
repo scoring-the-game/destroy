@@ -2,7 +2,6 @@ import {
   IActor,
   TCoord,
   TVelocity,
-  TActorEvolveProps,
   TScreenInfo,
   ActorType,
 } from '../typedefs';
@@ -63,12 +62,12 @@ export default class Particle implements IActor {
     }
   }
 
-  evolve(_: TActorEvolveProps) {
+  evolve(_: TScreenInfo) {
     this.move();
     this.shrink();
   }
 
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
     ctx.fillStyle = '#ffffff';
@@ -80,11 +79,4 @@ export default class Particle implements IActor {
     ctx.fill();
     ctx.restore();
   }
-
-  /*
-  render({ screenInfo, ctx }: TActorRenderProps) {
-    this.update(screenInfo);
-    this.draw(ctx);
-  }
-  */
 }

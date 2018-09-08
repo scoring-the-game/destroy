@@ -2,7 +2,6 @@ import {
   TCoord,
   TVelocity,
   IActor,
-  TActorEvolveProps,
   TScreenInfo,
   ActorType,
 } from '../typedefs';
@@ -58,12 +57,12 @@ export default class Bullet implements IActor {
     }
   }
 
-  evolve({ screenInfo }: TActorEvolveProps) {
+  evolve(screenInfo: TScreenInfo) {
     this.move();
     this.checkBounds(screenInfo);
   }
 
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D) {
     const { x, y } = this.position;
     ctx.save();
     ctx.translate(x, y);
@@ -76,11 +75,4 @@ export default class Bullet implements IActor {
     ctx.fill();
     ctx.restore();
   }
-
-  /*
-  render({ screenInfo, ctx }: TActorRenderProps) {
-    this.update(screenInfo);
-    this.draw(ctx);
-  }
-  */
 }

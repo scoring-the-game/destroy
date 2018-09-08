@@ -1,7 +1,6 @@
 import {
   IActor,
   ActorType,
-  TActorEvolveProps,
   TCoord,
   TVelocity,
   TScreenInfo,
@@ -136,13 +135,13 @@ export default class Asteroid implements IActor {
     this.position = { x, y };
   }
 
-  evolve({ screenInfo }: TActorEvolveProps) {
+  evolve(screenInfo: TScreenInfo) {
     this.move();
     this.rotate();
     this.adjustBounds(screenInfo);
   }
 
-  draw(ctx) {
+  draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
     ctx.rotate((this.rotation * Math.PI) / 180);
@@ -157,11 +156,4 @@ export default class Asteroid implements IActor {
     ctx.stroke();
     ctx.restore();
   }
-
-  /*
-  render({ screenInfo, ctx }: TActorRenderProps) {
-    this.update(screenInfo);
-    this.draw(ctx);
-  }
-  */
 }
