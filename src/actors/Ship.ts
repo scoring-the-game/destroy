@@ -1,6 +1,6 @@
 import {
   IGameItem,
-  TPosition,
+  TCoord,
   TVelocity,
   GameItemType,
   TGameItemRenderProps,
@@ -8,24 +8,28 @@ import {
   TKeyStatus,
 } from '../typedefs';
 
+// -------------------------------------------------------------------------
 import Bullet from './Bullet';
 import Particle, { TParticleProps } from './Particle';
 import { rotatePoint, randomNumBetween } from '../helpers';
 
+// -------------------------------------------------------------------------
 export type TShipProps = {
-  readonly position: TPosition;
+  readonly position: TCoord;
   readonly registerItem: (item: IGameItem) => void;
   readonly onDie: () => void;
 };
 
+// -------------------------------------------------------------------------
 const enum RotationDirection {
   left = 'left',
   right = 'right',
 }
 
+// -------------------------------------------------------------------------
 export default class Ship implements IGameItem {
   type: GameItemType;
-  position: TPosition;
+  position: TCoord;
   velocity: TVelocity;
   rotation: number;
   rotationSpeed: number;

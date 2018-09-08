@@ -1,4 +1,4 @@
-export type TPosition = {
+export type TCoord = {
   readonly x: number;
   readonly y: number;
 };
@@ -39,7 +39,7 @@ export interface IGameItem {
   // fields:
   type: GameItemType;
   isDeleted: boolean;
-  position: TPosition;
+  position: TCoord;
   radius: number;
 
   // methods:

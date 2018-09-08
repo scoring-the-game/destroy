@@ -1,22 +1,24 @@
 import {
   IGameItem,
-  TPosition,
+  TCoord,
   TVelocity,
   TGameItemRenderProps,
   TScreenInfo,
   GameItemType,
 } from '../typedefs';
 
+// -------------------------------------------------------------------------
 export type TParticleProps = {
-  readonly position: TPosition;
+  readonly position: TCoord;
   readonly size: number;
   readonly velocity: TVelocity;
   readonly lifeSpan: number;
 };
 
+// -------------------------------------------------------------------------
 export default class Particle implements IGameItem {
   type: GameItemType;
-  position: TPosition;
+  position: TCoord;
   velocity: TVelocity;
   radius: number;
   lifeSpan: number;

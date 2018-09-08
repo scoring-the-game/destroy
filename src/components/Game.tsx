@@ -1,5 +1,5 @@
 import {
-  TPosition,
+  TCoord,
   TVelocity,
   TScreenInfo,
   IGameItem,
@@ -122,7 +122,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.updateItemsMap(ship);
   }
 
-  generateAsteroid({ width, height }: TScreenInfo, { x, y }: TPosition) {
+  generateAsteroid({ width, height }: TScreenInfo, { x, y }: TCoord) {
     const asteroid = new Asteroid({
       size: 80,
       position: {

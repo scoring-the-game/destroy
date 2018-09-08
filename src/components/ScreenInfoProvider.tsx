@@ -1,17 +1,21 @@
-import * as React from 'react';
-
 import { TScreenInfo } from '../typedefs';
 
+// -------------------------------------------------------------------------
+import * as React from 'react';
+
+// -------------------------------------------------------------------------
 export type TScreenInfoProviderProps = {
   readonly children: (screenInfo: TScreenInfo) => React.ReactNode;
 };
 
+// -------------------------------------------------------------------------
 const defaultState: TScreenInfo = {
   width: window.innerWidth,
   height: window.innerHeight,
   ratio: window.devicePixelRatio || 1,
 };
 
+// -------------------------------------------------------------------------
 export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps, TScreenInfo> {
   state: TScreenInfo = defaultState;
 

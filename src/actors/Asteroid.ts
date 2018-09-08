@@ -2,30 +2,33 @@ import {
   IGameItem,
   GameItemType,
   TGameItemRenderProps,
-  TPosition,
+  TCoord,
   TVelocity,
   TScreenInfo,
 } from '../typedefs';
 
+// -------------------------------------------------------------------------
 import Particle from './Particle';
 import { asteroidVertices, randomNumBetween } from '../helpers';
 
+// -------------------------------------------------------------------------
 export type TAsteroidProps = {
-  readonly position: TPosition;
+  readonly position: TCoord;
   readonly size: number;
   readonly registerItem: (item: IGameItem) => void;
   readonly incrementScore: (score: number) => void;
 };
 
+// -------------------------------------------------------------------------
 export default class Asteroid implements IGameItem {
   type: GameItemType;
-  position: TPosition;
+  position: TCoord;
   velocity: TVelocity;
   rotation: number;
   rotationSpeed: number;
   radius: number;
   score: number;
-  vertices: TPosition[];
+  vertices: TCoord[];
   isDeleted: boolean;
 
   incrementScore: (score: number) => void;
@@ -45,7 +48,7 @@ export default class Asteroid implements IGameItem {
     this.registerItem = props.registerItem;
   }
 
-  calcInitialParticlePosition(): TPosition {
+  calcInitialParticlePosition(): TCoord {
     const { radius } = this;
     let { x, y } = this.position;
     x += randomNumBetween(-radius / 4, radius / 4);

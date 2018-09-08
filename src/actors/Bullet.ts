@@ -1,5 +1,5 @@
 import {
-  TPosition,
+  TCoord,
   TVelocity,
   IGameItem,
   TGameItemRenderProps,
@@ -7,16 +7,19 @@ import {
   GameItemType,
 } from '../typedefs';
 
+// -------------------------------------------------------------------------
 import { rotatePoint } from '../helpers';
 
+// -------------------------------------------------------------------------
 export type TBulletProps = {
-  readonly position: TPosition;
+  readonly position: TCoord;
   readonly rotation: number;
 };
 
+// -------------------------------------------------------------------------
 export default class Bullet implements IGameItem {
   type: GameItemType;
-  position: TPosition;
+  position: TCoord;
   rotation: number;
   velocity: TVelocity;
   radius: number;

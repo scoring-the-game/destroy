@@ -1,11 +1,14 @@
-import * as React from 'react';
-
 import { TKeyStatus } from '../typedefs';
 
+// -------------------------------------------------------------------------
+import * as React from 'react';
+
+// -------------------------------------------------------------------------
 export type TKeyStatusProviderProps = {
   readonly children: (keyStatus: TKeyStatus) => React.ReactNode;
 };
 
+// -------------------------------------------------------------------------
 const KEY = {
   LEFT: 37,
   RIGHT: 39,
@@ -24,6 +27,7 @@ const defaultState: TKeyStatus = {
   space: false,
 };
 
+// -------------------------------------------------------------------------
 export class KeyStatusProvider extends React.Component<TKeyStatusProviderProps, TKeyStatus> {
   state: TKeyStatus = defaultState;
 

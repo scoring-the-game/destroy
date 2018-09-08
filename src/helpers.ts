@@ -1,6 +1,6 @@
 // From: http://codepen.io/bungu/pen/rawvJe
 
-import { TPosition, TVelocity } from './typedefs';
+import { TCoord, TVelocity } from './typedefs';
 
 /**
  * Generates vertices for asteroid polygon with certain count and radius
@@ -8,7 +8,7 @@ import { TPosition, TVelocity } from './typedefs';
  * @param  {Number} rad     Maximal radius of polygon
  * @return {Array}        Array of vertices: {x: Number, y: Number}
  */
-export function asteroidVertices(count: number, radius: number): TPosition[] {
+export function asteroidVertices(count: number, radius: number): TCoord[] {
   let p = [];
   for (let i = 0; i < count; i++) {
     p[i] = {
@@ -31,7 +31,7 @@ export function asteroidVertices(count: number, radius: number): TPosition[] {
  * @param {Object} center   {x: Number, y: Number}
  * @param {Number} angle    Angle in radians
  */
-export function rotatePoint(p: TPosition, center: TPosition, angle: number): TPosition {
+export function rotatePoint(p: TCoord, center: TCoord, angle: number): TCoord {
   return {
     x: (p.x - center.x) * Math.cos(angle) - (p.y - center.y) * Math.sin(angle) + center.x,
     y: (p.x - center.x) * Math.sin(angle) + (p.y - center.y) * Math.cos(angle) + center.y,
