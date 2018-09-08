@@ -11,6 +11,7 @@ import {
 import Bullet from './Bullet';
 import Particle, { TParticleProps } from './Particle';
 import { rotatePoint, randomNumBetween } from '../helpers';
+import { playShoot, playDie, playRocketThrust } from '../sounds';
 
 // -------------------------------------------------------------------------
 export type TShipProps = {
@@ -81,6 +82,7 @@ export default class Ship implements IActor {
     this.isDeleted = true;
     this.onDie();
     this.explode();
+    playDie();
   }
 
   rotate(direction: RotationDirection) {
@@ -108,13 +110,15 @@ export default class Ship implements IActor {
       position: { x: x + rx + randomNumBetween(-2, 2), y: y + ry + randomNumBetween(-2, 2) },
       velocity: { dx: rx / randomNumBetween(3, 5), dy: ry / randomNumBetween(3, 5) },
     });
+
+    playRocketThrust();
   }
 
-  fireBullet() {
-    console.log('Ship#fireBullet');
+  shootBullet() {
     const bullet = new Bullet({ position: this.position, rotation: this.rotation });
     this.registerActor(bullet);
     this.lastShot = Date.now();
+    playShoot();
   }
 
   handleControls(keyStatus: TKeyStatus) {
@@ -122,7 +126,7 @@ export default class Ship implements IActor {
     if (keyStatus.left) this.rotate(RotationDirection.left);
     if (keyStatus.right) this.rotate(RotationDirection.right);
     if (keyStatus.space && Date.now() - this.lastShot > 300) {
-      this.fireBullet();
+      this.shootBullet();
     }
   }
 

@@ -14,6 +14,7 @@ import { Controls } from './Controls';
 import { Canvas } from './Canvas';
 
 import { randomNumBetweenExcluding } from '../helpers';
+import { playBackgroundMain, playBackgroundGameOver } from '../sounds';
 
 // -------------------------------------------------------------------------
 type TGameProps = {
@@ -43,9 +44,8 @@ export class Game extends React.Component<TGameProps, TGameState> {
   ship: Ship;
 
   componentDidMount() {
-    console.log('Game#componentDidMount');
+    // console.log('Game#componentDidMount');
     this.startGame();
-    requestAnimationFrame(this.handleAnimationFrame);
   }
 
   refCanvas: HTMLCanvasElement | null = null;
@@ -55,19 +55,8 @@ export class Game extends React.Component<TGameProps, TGameState> {
 
   handleClickTryAgain = () => this.startGame();
 
-  drawBkgnd(ctx, { width, height, ratio }: TScreenInfo) {
-    ctx.save();
-    ctx.scale(ratio, ratio);
-
-    // Motion trail
-    ctx.fillStyle = '#000';
-    ctx.globalAlpha = 0.4;
-    ctx.fillRect(0, 0, width, height);
-    ctx.globalAlpha = 1;
-  }
-
   incrementScore = (points: number) => {
-    console.log('Game#incrementScore =>', { points });
+    // console.log('Game#incrementScore =>', { points });
     if (!this.state.inGame) return;
     this.setState(state => ({ currentScore: state.currentScore + points }));
   };
@@ -77,6 +66,8 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.actors = [];
     this.generateShip();
     this.generateAsteroids(this.state.asteroidCount);
+    requestAnimationFrame(this.handleAnimationFrame);
+    playBackgroundMain();
   }
 
   handleShipDie = () => {
@@ -90,6 +81,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
         () => (localStorage['topscore'] = this.state.currentScore)
       );
     }
+    playBackgroundGameOver();
   };
 
   appendActor = (actor: IActor) => {
@@ -103,7 +95,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
       registerActor: this.appendActor,
       onDie: this.handleShipDie,
     });
-    console.log('Game#startGame/3', { ship });
+    // console.log('Game#startGame/3', { ship });
     this.ship = ship;
     this.appendActor(ship);
   }
@@ -187,10 +179,23 @@ export class Game extends React.Component<TGameProps, TGameState> {
     for (const actor of this.actors) actor.evolve(screenInfo, keyStatus);
   }
 
+  drawBkgnd(ctx, { width, height, ratio }: TScreenInfo) {
+    ctx.scale(ratio, ratio);
+    ctx.fillStyle = '#000';
+    ctx.globalAlpha = 0.4;
+    ctx.fillRect(0, 0, width, height);
+    ctx.globalAlpha = 1;
+  }
+
   draw() {
+    if (this.refCanvas === null) return;
+
     const ctx: CanvasRenderingContext2D = this.refCanvas.getContext('2d');
+    ctx.save();
+
     this.drawBkgnd(ctx, this.props.screenInfo);
     for (const actor of this.actors) actor.draw(ctx);
+
     ctx.restore();
   }
 
@@ -200,13 +205,14 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.checkCollisions();
     this.evolve();
     this.draw();
-    requestAnimationFrame(this.handleAnimationFrame);
+    if (this.state.inGame) requestAnimationFrame(this.handleAnimationFrame);
   };
 
   render() {
     // console.log('Game#render');
     const { screenInfo: { width, height, ratio } } = this.props;
     const { currentScore, topScore, inGame } = this.state;
+
     return (
       <div>
         {inGame ? null : (
@@ -218,7 +224,9 @@ export class Game extends React.Component<TGameProps, TGameState> {
         )}
         <Scoreboard currentScore={currentScore} topScore={topScore} />
         <Controls />
-        <Canvas innerRef={this.setRefCanvas} width={width * ratio} height={height * ratio} />
+        {inGame ? (
+          <Canvas innerRef={this.setRefCanvas} width={width * ratio} height={height * ratio} />
+        ) : null}
       </div>
     );
   }

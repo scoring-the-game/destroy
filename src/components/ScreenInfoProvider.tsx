@@ -28,17 +28,17 @@ export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps
   }
 
   addListeners() {
-    console.log('ScreenInfoProvider#addListeners');
+    // console.log('ScreenInfoProvider#addListeners');
     window.addEventListener('resize', this.handleResize);
   }
 
   removeListeners() {
-    console.log('ScreenInfoProvider#removeListeners');
+    // console.log('ScreenInfoProvider#removeListeners');
     window.removeEventListener('resize', this.handleResize);
   }
 
   handleResize = e => {
-    console.log('ScreenInfoProvider#handleResize');
+    // console.log('ScreenInfoProvider#handleResize');
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight,
@@ -47,7 +47,7 @@ export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps
   };
 
   render() {
-    console.log('ScreenInfoProvider#render');
+    // console.log('ScreenInfoProvider#render');
     return this.props.children(this.state);
   }
 }

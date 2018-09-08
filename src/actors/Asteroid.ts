@@ -9,6 +9,7 @@ import {
 // -------------------------------------------------------------------------
 import Particle from './Particle';
 import { asteroidVertices, randomNumBetween } from '../helpers';
+import { playHit } from '../sounds';
 
 // -------------------------------------------------------------------------
 export type TAsteroidProps = {
@@ -89,6 +90,7 @@ export default class Asteroid implements IActor {
   destroy() {
     this.isDeleted = true;
     this.incrementScore(this.score);
+    playHit();
 
     // Explode
     for (let i = 0; i < this.radius; i++) {
