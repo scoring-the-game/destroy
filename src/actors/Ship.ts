@@ -6,11 +6,11 @@ import {
   TGameItemRenderProps,
   TScreenInfo,
   TKeyStatus,
-} from './typedefs';
+} from '../typedefs';
 
 import Bullet from './Bullet';
 import Particle, { TParticleProps } from './Particle';
-import { rotatePoint, randomNumBetween } from './helpers';
+import { rotatePoint, randomNumBetween } from '../helpers';
 
 export type TShipProps = {
   readonly position: TPosition;
@@ -58,10 +58,7 @@ export default class Ship implements IGameItem {
   }
 
   explode() {
-    const {
-      radius,
-      position: { x, y },
-    } = this;
+    const { radius, position: { x, y } } = this;
 
     // Explode
     for (let i = 0; i < 60; i++) {
@@ -91,15 +88,15 @@ export default class Ship implements IGameItem {
 
   accelerate(val) {
     let { dx, dy } = this.velocity;
-    dx -= Math.sin((-this.rotation * Math.PI) / 180) * this.speed;
-    dy -= Math.cos((-this.rotation * Math.PI) / 180) * this.speed;
+    dx -= Math.sin(-this.rotation * Math.PI / 180) * this.speed;
+    dy -= Math.cos(-this.rotation * Math.PI / 180) * this.speed;
     this.velocity = { dx, dy };
 
     // Thruster particles
     const { x: rx, y: ry } = rotatePoint(
       { x: 0, y: -10 },
       { x: 0, y: 0 },
-      ((this.rotation - 180) * Math.PI) / 180
+      (this.rotation - 180) * Math.PI / 180
     );
     const { x, y } = this.position;
     this.createParticle({
@@ -163,7 +160,7 @@ export default class Ship implements IGameItem {
   draw(ctx) {
     ctx.save();
     ctx.translate(this.position.x, this.position.y);
-    ctx.rotate((this.rotation * Math.PI) / 180);
+    ctx.rotate(this.rotation * Math.PI / 180);
     ctx.strokeStyle = '#ffffff';
     ctx.fillStyle = '#000000';
     ctx.lineWidth = 2;

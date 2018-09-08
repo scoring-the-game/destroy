@@ -1,4 +1,11 @@
-import { IGameItem, TPosition, TVelocity, TGameItemRenderProps, TScreenInfo, GameItemType } from './typedefs';
+import {
+  IGameItem,
+  TPosition,
+  TVelocity,
+  TGameItemRenderProps,
+  TScreenInfo,
+  GameItemType,
+} from '../typedefs';
 
 export type TParticleProps = {
   readonly position: TPosition;

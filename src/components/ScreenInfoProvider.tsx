@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { TScreenInfo } from './typedefs';
+import { TScreenInfo } from '../typedefs';
 
 export type TScreenInfoProviderProps = {
   readonly children: (screenInfo: TScreenInfo) => React.ReactNode;

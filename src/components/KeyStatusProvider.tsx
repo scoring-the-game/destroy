@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { TKeyStatus } from './typedefs';
+import { TKeyStatus } from '../typedefs';
 
 export type TKeyStatusProviderProps = {
   readonly children: (keyStatus: TKeyStatus) => React.ReactNode;

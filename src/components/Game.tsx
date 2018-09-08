@@ -5,22 +5,22 @@ import {
   IGameItem,
   GameItemType,
   TKeyStatus,
-} from './typedefs';
+} from '../typedefs';
 
 // -------------------------------------------------------------------------
 import * as React from 'react';
 
-import Ship from './Ship';
-import Asteroid from './Asteroid';
-import Bullet from './Bullet';
-import Particle from './Particle';
+import Ship from '../actors/Ship';
+import Asteroid from '../actors/Asteroid';
+import Bullet from '../actors/Bullet';
+import Particle from '../actors/Particle';
 
 import { Scoreboard } from './Scoreboard';
 import { GameOverMessage } from './GameOverMessage';
 import { Controls } from './Controls';
 import { Canvas } from './Canvas';
 
-import { randomNumBetweenExcluding } from './helpers';
+import { randomNumBetweenExcluding } from '../helpers';
 
 // -------------------------------------------------------------------------
 type TGameProps = {

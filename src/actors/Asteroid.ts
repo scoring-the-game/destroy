@@ -5,10 +5,10 @@ import {
   TPosition,
   TVelocity,
   TScreenInfo,
-} from './typedefs';
+} from '../typedefs';
 
 import Particle from './Particle';
-import { asteroidVertices, randomNumBetween } from './helpers';
+import { asteroidVertices, randomNumBetween } from '../helpers';
 
 export type TAsteroidProps = {
   readonly position: TPosition;
