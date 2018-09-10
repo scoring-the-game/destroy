@@ -3,7 +3,7 @@ import {
   TCoord,
   TVelocity,
   ActorType,
-  TScreenInfo,
+  TScreenBounds,
   TKeyStatus,
 } from '../typedefs';
 
@@ -130,7 +130,7 @@ export default class Ship implements IActor {
     }
   }
 
-  move({ width, height }: TScreenInfo) {
+  move({ width, height }: TScreenBounds) {
     let { x, y } = this.position;
     let { dx, dy } = this.velocity;
     this.position = { x: x + dx, y: y + dy };
@@ -146,7 +146,7 @@ export default class Ship implements IActor {
     this.rotation = rotation;
   }
 
-  clampBounds({ width, height }: TScreenInfo) {
+  clampBounds({ width, height }: TScreenBounds) {
     let { x, y } = this.position;
 
     if (x > width) x = 0;
@@ -158,29 +158,10 @@ export default class Ship implements IActor {
     this.position = { x, y };
   }
 
-  evolve(screenInfo: TScreenInfo, keyStatus: TKeyStatus) {
+  evolve(screenBounds: TScreenBounds, keyStatus: TKeyStatus) {
     this.handleControls(keyStatus);
-    this.move(screenInfo);
+    this.move(screenBounds);
     this.clampRotation();
-    this.clampBounds(screenInfo);
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.rotation * Math.PI / 180);
-    ctx.strokeStyle = '#ffffff';
-    ctx.fillStyle = '#000000';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, -15);
-    ctx.lineTo(10, 10);
-    ctx.lineTo(5, 7);
-    ctx.lineTo(-5, 7);
-    ctx.lineTo(-10, 10);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
+    this.clampBounds(screenBounds);
   }
 }

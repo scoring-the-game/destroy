@@ -1,17 +1,17 @@
 import * as React from 'react';
 
-import { ScreenInfoProvider } from './ScreenInfoProvider';
+import { ScreenBoundsProvider } from './ScreenBoundsProvider';
 import { KeyStatusProvider } from './KeyStatusProvider';
 import { Game } from './Game';
 
 export function App() {
   return (
-    <ScreenInfoProvider>
-      {screenInfo => (
+    <ScreenBoundsProvider>
+      {screenBounds => (
         <KeyStatusProvider>
-          {keyStatus => <Game screenInfo={screenInfo} keyStatus={keyStatus} />}
+          {keyStatus => <Game screenBounds={screenBounds} keyStatus={keyStatus} />}
         </KeyStatusProvider>
       )}
-    </ScreenInfoProvider>
+    </ScreenBoundsProvider>
   );
 }

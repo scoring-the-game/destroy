@@ -1,23 +1,23 @@
-import { TScreenInfo } from '../typedefs';
+import { TScreenBounds } from '../typedefs';
 
 // -------------------------------------------------------------------------
 import * as React from 'react';
 
 // -------------------------------------------------------------------------
-export type TScreenInfoProviderProps = {
-  readonly children: (screenInfo: TScreenInfo) => React.ReactNode;
+export type TScreenBoundsProviderProps = {
+  readonly children: (screenBounds: TScreenBounds) => React.ReactNode;
 };
 
 // -------------------------------------------------------------------------
-const defaultState: TScreenInfo = {
+const defaultState: TScreenBounds = {
   width: window.innerWidth,
   height: window.innerHeight,
   ratio: window.devicePixelRatio || 1,
 };
 
 // -------------------------------------------------------------------------
-export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps, TScreenInfo> {
-  state: TScreenInfo = defaultState;
+export class ScreenBoundsProvider extends React.Component<TScreenBoundsProviderProps, TScreenBounds> {
+  state: TScreenBounds = defaultState;
 
   componentDidMount() {
     this.addListeners();
@@ -28,17 +28,17 @@ export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps
   }
 
   addListeners() {
-    // console.log('ScreenInfoProvider#addListeners');
+    // console.log('ScreenBoundsProvider#addListeners');
     window.addEventListener('resize', this.handleResize);
   }
 
   removeListeners() {
-    // console.log('ScreenInfoProvider#removeListeners');
+    // console.log('ScreenBoundsProvider#removeListeners');
     window.removeEventListener('resize', this.handleResize);
   }
 
   handleResize = e => {
-    // console.log('ScreenInfoProvider#handleResize');
+    // console.log('ScreenBoundsProvider#handleResize');
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight,
@@ -47,7 +47,7 @@ export class ScreenInfoProvider extends React.Component<TScreenInfoProviderProps
   };
 
   render() {
-    // console.log('ScreenInfoProvider#render');
+    // console.log('ScreenBoundsProvider#render');
     return this.props.children(this.state);
   }
 }

@@ -3,7 +3,7 @@ import {
   ActorType,
   TCoord,
   TVelocity,
-  TScreenInfo,
+  TScreenBounds,
 } from '../typedefs';
 
 // -------------------------------------------------------------------------
@@ -124,7 +124,7 @@ export default class Asteroid implements IActor {
     }
   }
 
-  adjustBounds({ width, height }: TScreenInfo) {
+  adjustBounds({ width, height }: TScreenBounds) {
     const { radius } = this;
     let { x, y } = this.position;
 
@@ -137,25 +137,9 @@ export default class Asteroid implements IActor {
     this.position = { x, y };
   }
 
-  evolve(screenInfo: TScreenInfo) {
+  evolve(screenBounds: TScreenBounds) {
     this.move();
     this.rotate();
-    this.adjustBounds(screenInfo);
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.translate(this.position.x, this.position.y);
-    ctx.rotate((this.rotation * Math.PI) / 180);
-    ctx.strokeStyle = '#FFF';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, -this.radius);
-    for (let i = 1; i < this.vertices.length; i++) {
-      ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
-    }
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
+    this.adjustBounds(screenBounds);
   }
 }
