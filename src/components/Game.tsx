@@ -1,4 +1,4 @@
-import { TCoord, TVelocity, TScreenInfo, IActor, ActorType, TKeyStatus } from '../typedefs';
+import { TCoord, TVelocity, TScreenBounds, IActor, ActorType, TKeyStatus } from '../typedefs';
 
 // -------------------------------------------------------------------------
 import * as React from 'react';
@@ -18,7 +18,7 @@ import { playBackgroundMain, playBackgroundGameOver } from '../sounds';
 
 // -------------------------------------------------------------------------
 type TGameProps = {
-  readonly screenInfo: TScreenInfo;
+  readonly screenBounds: TScreenBounds;
   readonly keyStatus: TKeyStatus;
 };
 
@@ -30,6 +30,16 @@ type TGameState = {
 };
 
 // type TActorsMap = { [key in ActorType]: IActor[] };
+
+// -------------------------------------------------------------------------
+function filterByType(actors: IActor[], type: ActorType): IActor[] {
+  return actors.filter(actor => actor.type === type);
+}
+
+const filterShips = (actors: IActor[]): IActor[] => filterByType(actors, ActorType.ships);
+const filterAsteroids = (actors: IActor[]): IActor[] => filterByType(actors, ActorType.asteroids);
+const filterParticles = (actors: IActor[]): IActor[] => filterByType(actors, ActorType.particles);
+const filterBullets = (actors: IActor[]): IActor[] => filterByType(actors, ActorType.bullets);
 
 // -------------------------------------------------------------------------
 export class Game extends React.Component<TGameProps, TGameState> {
@@ -47,11 +57,6 @@ export class Game extends React.Component<TGameProps, TGameState> {
     // console.log('Game#componentDidMount');
     this.startGame();
   }
-
-  refCanvas: HTMLCanvasElement | null = null;
-  setRefCanvas = (refCanvas: HTMLCanvasElement | null) => {
-    this.refCanvas = refCanvas;
-  };
 
   handleClickTryAgain = () => this.startGame();
 
@@ -89,7 +94,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
   };
 
   generateShip() {
-    const { screenInfo: { width, height } } = this.props;
+    const { screenBounds: { width, height } } = this.props;
     const ship = new Ship({
       position: { x: width / 2, y: height / 2 },
       registerActor: this.appendActor,
@@ -104,7 +109,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
     return this.ship.position;
   }
 
-  generateAsteroid({ width, height }: TScreenInfo, { x, y }: TCoord) {
+  generateAsteroid({ width, height }: TScreenBounds, { x, y }: TCoord) {
     const asteroid = new Asteroid({
       size: 80,
       position: {
@@ -118,27 +123,15 @@ export class Game extends React.Component<TGameProps, TGameState> {
   }
 
   generateAsteroids(howMany: number) {
-    const { screenInfo } = this.props;
+    const { screenBounds } = this.props;
     const position = this.getShipPosition();
     for (let i = 0; i < howMany; i++) {
-      this.generateAsteroid(screenInfo, position);
+      this.generateAsteroid(screenBounds, position);
     }
   }
 
-  calcAsteroids(): IActor[] {
-    return this.actors.filter(actor => actor.type === ActorType.asteroids);
-  }
-
-  calcBullets(): IActor[] {
-    return this.actors.filter(actor => actor.type === ActorType.bullets);
-  }
-
-  calcParticles(): IActor[] {
-    return this.actors.filter(actor => actor.type === ActorType.particles);
-  }
-
   replenishAsteroids() {
-    if (this.calcAsteroids().length > 0) return;
+    if (filterAsteroids(this.actors).length > 0) return;
 
     let { asteroidCount } = this.state;
     asteroidCount += 1;
@@ -169,34 +162,15 @@ export class Game extends React.Component<TGameProps, TGameState> {
   }
 
   checkCollisions() {
-    this.checkCollisionsWith(this.calcBullets(), this.calcAsteroids());
-    this.checkCollisionsWith([this.ship], this.calcAsteroids());
+    const asteroids = filterAsteroids(this.actors);
+    this.checkCollisionsWith(filterBullets(this.actors), asteroids);
+    this.checkCollisionsWith([this.ship], asteroids);
     this.removeDeletedActors();
   }
 
   evolve() {
-    const { screenInfo, keyStatus } = this.props;
-    for (const actor of this.actors) actor.evolve(screenInfo, keyStatus);
-  }
-
-  drawBkgnd(ctx, { width, height, ratio }: TScreenInfo) {
-    ctx.scale(ratio, ratio);
-    ctx.fillStyle = '#000';
-    ctx.globalAlpha = 0.4;
-    ctx.fillRect(0, 0, width, height);
-    ctx.globalAlpha = 1;
-  }
-
-  draw() {
-    if (this.refCanvas === null) return;
-
-    const ctx: CanvasRenderingContext2D = this.refCanvas.getContext('2d');
-    ctx.save();
-
-    this.drawBkgnd(ctx, this.props.screenInfo);
-    for (const actor of this.actors) actor.draw(ctx);
-
-    ctx.restore();
+    const { screenBounds, keyStatus } = this.props;
+    for (const actor of this.actors) actor.evolve(screenBounds, keyStatus);
   }
 
   handleAnimationFrame = () => {
@@ -204,13 +178,11 @@ export class Game extends React.Component<TGameProps, TGameState> {
     this.replenishAsteroids();
     this.checkCollisions();
     this.evolve();
-    this.draw();
     if (this.state.inGame) requestAnimationFrame(this.handleAnimationFrame);
   };
 
   render() {
     // console.log('Game#render');
-    const { screenInfo: { width, height, ratio } } = this.props;
     const { currentScore, topScore, inGame } = this.state;
 
     return (
@@ -224,9 +196,7 @@ export class Game extends React.Component<TGameProps, TGameState> {
         )}
         <Scoreboard currentScore={currentScore} topScore={topScore} />
         <Controls />
-        {inGame ? (
-          <Canvas innerRef={this.setRefCanvas} width={width * ratio} height={height * ratio} />
-        ) : null}
+        {inGame ? <Canvas screenBounds={this.props.screenBounds} actors={this.actors} /> : null}
       </div>
     );
   }

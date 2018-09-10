@@ -2,7 +2,7 @@ import {
   IActor,
   TCoord,
   TVelocity,
-  TScreenInfo,
+  TScreenBounds,
   ActorType,
 } from '../typedefs';
 
@@ -62,21 +62,8 @@ export default class Particle implements IActor {
     }
   }
 
-  evolve(_: TScreenInfo) {
+  evolve(_: TScreenBounds) {
     this.move();
     this.shrink();
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.translate(this.position.x, this.position.y);
-    ctx.fillStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, -this.radius);
-    ctx.arc(0, 0, this.radius, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
   }
 }

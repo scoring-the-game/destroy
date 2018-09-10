@@ -2,7 +2,7 @@ import {
   TCoord,
   TVelocity,
   IActor,
-  TScreenInfo,
+  TScreenBounds,
   ActorType,
 } from '../typedefs';
 
@@ -48,7 +48,7 @@ export default class Bullet implements IActor {
     this.position = { x: x + dx, y: y + dy };
   }
 
-  checkBounds({ width, height }: TScreenInfo) {
+  checkBounds({ width, height }: TScreenBounds) {
     const { x, y } = this.position;
 
     // Delete if it goes out of bounds
@@ -57,22 +57,8 @@ export default class Bullet implements IActor {
     }
   }
 
-  evolve(screenInfo: TScreenInfo) {
+  evolve(screenBounds: TScreenBounds) {
     this.move();
-    this.checkBounds(screenInfo);
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    const { x, y } = this.position;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(this.rotation * Math.PI / 180);
-    ctx.fillStyle = '#fff';
-    (ctx.lineWidth = 0), 5;
-    ctx.beginPath();
-    ctx.arc(0, 0, 2, 0, 2 * Math.PI);
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+    this.checkBounds(screenBounds);
   }
 }

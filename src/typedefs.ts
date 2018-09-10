@@ -8,7 +8,7 @@ export type TVelocity = {
   readonly dy: number;
 };
 
-export type TScreenInfo = {
+export type TScreenBounds = {
   readonly width: number;
   readonly height: number;
   readonly ratio: number;
@@ -37,7 +37,6 @@ export interface IActor {
   radius: number;
 
   // methods:
-  evolve: (screenInfo: TScreenInfo, keyStatus?: TKeyStatus) => void;
-  draw: (ctx: CanvasRenderingContext2D) => void;
+  evolve: (screenBounds: TScreenBounds, keyStatus?: TKeyStatus) => void;
   destroy: () => void;
 }
