@@ -18,7 +18,7 @@ type TFnDraw = (ctx: CanvasRenderingContext2D, actor: IActor) => void;
 
 // -------------------------------------------------------------------------
 function drawBkgnd(ctx: CanvasRenderingContext2D, { width, height, ratio }: TScreenBounds) {
-  ctx.scale(ratio, ratio);
+  // ctx.scale(ratio, ratio);
   ctx.fillStyle = '#000';
   ctx.globalAlpha = 0.4;
   ctx.fillRect(0, 0, width, height);
